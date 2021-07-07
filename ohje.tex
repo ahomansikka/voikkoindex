@@ -1,0 +1,337 @@
+\documentclass[12pt]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{finnish}
+\usepackage{csquotes}
+\usepackage[lastpage,user]{zref}
+\usepackage{fancyhdr}
+\usepackage{splitidx}\makeindex
+\usepackage{url}
+
+% Nämä ovat parametrien oletusarvoja eli saman voi sanoa näin: \usepackage{voikkoindex}
+\usepackage[langcode="fi",
+            path="/usr/local/lib/voikko",
+            nimet=Henkilöhakemisto,
+            paikat=Paikannimihakemisto,
+            sanat=Asiahakemisto]{voikkoindex}
+
+\SetExtraSurname{Gardie}
+\SetExtraSurname{Wirta|nen}
+\SetSurnameIndex{Wirtanen}{Virtanen}
+
+\frenchspacing
+\headheight 15pt
+\raggedright
+
+\lhead{Voikkoindexin asennus- ja käyttöohje}
+\rhead{\thepage(\zpageref{LastPage})}
+\cfoot{}
+\begin{document}
+\pagestyle{fancy}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+Voikkoindex on LuaLaTeX-paketti, joka tekee hakemistoja ja osaa
+taivuttaa suomen kielen sanoja.
+
+
+\section*{Käyttö LaTeX-tiedostoissa}
+
+\begin{verbatim}
+\usepackage[langcode="fi",
+            path="/usr/local/lib/voikko",
+            nimet=Henkilöhakemisto,
+            paikat=Paikannimihakemisto,
+            sanat=Asiahakemisto]{voikkoindex}
+\end{verbatim}
+
+\verb=langcode= pitää olla joko \verb="fi"= tai \verb="fi-x-sukija"=
+Huomaa, että parametrissa pitää olla lainausmerkit alussa ja lopussa.
+
+\verb=path= on hakemisto, jossa Voikon sanastotiedostot ovat.
+Lainausmerkkien pitää olla myös tämän parametrin alussa ja lopussa.
+
+\verb=nimet=, \verb=paikat= ja \verb=sanat= ovat hakemistojen nimet,
+jotka splitidx'n komento \verb=\printindex= tulostaa.
+
+Nuo ovat oletusarvoja eli jos ne kelpaavat, voidaan kirjoittaa näin
+
+\begin{verbatim}
+\usepackage{voikkoindex}
+\end{verbatim}
+
+Siis \verb=voikkoindex= määrittelee kolme indeksiä.
+
+
+\bigskip
+LaTeXissa on paketti \verb=splitidx=, jolla voi tehdä useita
+indeksejä, esimeriksi
+
+\begin{verbatim}
+Maija Virtaselle\sindex[nimet]{Virtanen, Maija} tuli
+Helsingistä\sindex[paikat]{Helsinki}
+kirjoja\sindex[sanat]{kirja}
+Johan Wolfgang von
+Goethesta.\sindex[nimet]{Goethe, Johan Wolfgang@von Goethe, Johan Wolfgang}
+\end{verbatim}
+
+Typerä lause, mutta se on vain esimerkki.
+
+LuaLaTeX-paketti voikkoindex muuttaa sanat perusmuotoon ennen niitten
+laittamista hakemistoon, joten lause voidaan kirjoittaa
+
+\begin{verbatim}
+\VXN{Maija}{Virtaselle} tuli
+\VXP{Helsingistä}
+\VXS{kirjoja}
+\VXVON{Johan Wolfgang}{von}{Goethesta}[.]
+\end{verbatim}
+
+
+\section*{Komennot}
+
+Voikkoindex määrittelee 17 komentoa
+
+\begin{verbatim}
+\newcommand{\vxn}[1]{\sindex[nimet]{#1}}
+\newcommand{\vxp}[1]{\sindex[paikat]{#1}}
+\newcommand{\vxs}[1]{\sindex[sanat]{#1}}
+\newcommand{\vxvon}[3]{\vxn{#3, #1@#2 #3, #1}}
+
+\NewDocumentCommand{\VXN}{m m o}
+\NewDocumentCommand{\VXP}{m o}
+\NewDocumentCommand{\VXS}{m o}
+\NewDocumentCommand{\VXVON}{m m m o}
+
+\NewDocumentCommand{\VXA}{m o}
+\NewDocumentCommand{\VXI}{m o}
+\NewDocumentCommand{\VXL}{m o}
+
+\NewDocumentCommand{\SetExtraSurname}{m}
+\NewDocumentCommand{\SetExtraPlaceName}{m}
+\NewDocumentCommand{\SetExtraWord}{m}
+
+\NewDocumentCommand{\SetSurnameIndex}{m m}
+\NewDocumentCommand{\SetPlaceNameIndex}{m m}
+\NewDocumentCommand{\SetWordIndex}{m m}
+\end{verbatim}
+
+
+\section*{Pienet komennot}
+
+Pienellä kirjoitetut komennot eivät muuta sanoja perusmuotoon, ja ne
+on määritelty vain kirjoittamistyön vähentämiseksi. Esimerkkilause
+voidaan kirjoittaa myös näin
+
+\begin{verbatim}
+Maija Virtaselle\vxn{Virtanen, Maija} tuli
+Helsingistä\vxp{Helsinki}
+kirjoja\vxs{kirja}
+Johan Wolfgang von
+Goethesta.\vxvon{Johan Wolfgang}{von}{Goethe}[.]
+\end{verbatim}
+
+
+\section*{von ja muut sellaiset}
+
+Joissakin sukunimissä on osia, joita ei oteta huomioon
+aakkosjärkestyksessä. Niitä varten on komennot
+
+\begin{verbatim}
+\newcommand{\vxvon}[3]{\vxn{#3, #1@#2 #3, #1}}
+\NewDocumentCommand{\VXVON}{m m m o}
+\end{verbatim}
+
+Ensimmäisessä parametrissa ovat etunimet, toisessa nimen osat joita
+ei oteta huomioon aakkosjärjestyksessä, ja kolmannessa sukunimi.
+Esimerkiksi
+
+\begin{verbatim}
+\VXVON{Magnus Gabriel}{de la}{Gardieta} muistellaan.
+\VXVON{Nils}{af}{Ursinin} nimi voidaan kirjoittaa näin.
+\end{verbatim}
+
+Vain sukunimi muutetaan perusmuotoon ennen hakemistoon laittamista.
+
+
+\section*{Välimerkit}
+
+
+Jos indeksoitava sana loppuu pisteeseen tai muuhun välimerkkiin,
+hakemistokomento on laitettava välimerkin jälkeen tai sanan ja
+välimerkin väliin tulee ylimääräistä tyhjää. Sen näkee helpoimmin
+y-kirjaimesta
+
+\begin{verbatim}
+\VXS{syksy}.
+\VXS{syksy}[.]
+\end{verbatim}
+
+\noindent
+\VXS{syksy}. \\
+\VXS{syksy}[.]
+
+Tätä varten voikkondexin komennoissa on ehdollinen parametri, johon
+välimerkin voi laittaa.
+
+
+\section*{Sukunimet ja paikannimet}
+
+\begin{verbatim}
+\VXN{<etunimet>}{<sukunimi>}[<välimerkki>]
+\VXP{<paikannimi>}[<välimerkki>]
+\end{verbatim}
+
+Etunimiä ei muuteta perusmuotoon, mutta sukunimi muutetaan.
+
+
+\section*{Asiasanat}
+
+\begin{verbatim}
+\VXA{<asiasana(t)>}[<välimerkki>]
+\VXI{<asiasana(t)>}[<välimerkki>]
+\VXS{<asiasana(t)>}[<välimerkki>]
+\end{verbatim}
+
+Jos asiasanassa on useampi kuin yksi sana, vain viimeinen sana
+muutetaan perusmuotoon (tähän on tulossa korjaus)
+
+\begin{verbatim}
+\VXS{uudelle nuorisoseuralle}[.] =>
+uudelle nuorisoseuralle.\vxs{uudelle nuorisoseura}
+\end{verbatim}
+
+
+\verb=\VXA= toimii kuten \verb=\VXS=, mutta muuttaa kaikki kirjaimet
+pieniksi kirjaimiksi. A niin kuin alas.
+
+\verb=\VXI= toimii kuten \verb=\VXS=, mutta muuttaa jokaisen sanan
+ensimmäisen kirjaimen isoksi kirjaimeksi ja muut pieniksi.
+I niin kuin isolla.
+
+
+\section*{Listat}
+
+
+\begin{verbatim}
+\VXL{<erisnimi> <sana>}[<välimerkki>]
+\end{verbatim}
+
+Argumentissa on kaksi sanaa, joista ensimmäinen on erisnimi, joka
+muutetaan perusmuotoon ja laitetaan paikannimihakemistoon, ja toinen
+on nimisana. Myös se muutetaan perusmuotoon ja asiahakemistoon
+laitetaan molemmat sanat niin, että vain jälkimmäinen on
+perusmuodossa. Esimerkiksi
+
+\begin{verbatim}
+\VXL{Helsingin nuorisoseuralle}[.] =>
+Helsingin\vxp{Helsinki} nuorisoseuralle.\vxs{Helsingin nuorisoseura}
+\end{verbatim}
+
+
+\subsection*{Yksikkö ja monikko}
+
+Voikko muuttaa kaikki nominit yksikön nominatiiviin. Esimerkiksi
+Yhdysvalloista tulee Yhdysvalta. Tätä varten voikkoindexissä on kolme
+komentoa. Kaikilla on kaksi parametria, joista ensimmäinen on Voikon
+palauttama arvo tai voikkoindexiin lisätty sana (katso seuraava
+kohta), ja toinen on sana (jonka ei tarvitse olla monikko), joka
+halutaan laittaa hakemistoon. Esimerkiksi
+
+\begin{verbatim}
+\SetSurnameIndex{Wirtanen}{Virtanen}
+\SetPlaceNameIndex{Yhdysvalta}{Yhdysvallat}
+\SetWordIndex{nuorisoseura}{nuorisoseurat}
+\end{verbatim}
+
+
+\subsection*{Voikosta puuttuvat sanat}
+
+Voikosta puuttuvat sanat voidaan lisätä voikkoindexiin tällä tavalla
+
+\begin{verbatim}
+\SetExtraSurname{Hyvämä|ki}
+\SetExtraPlaceName{Takahikiä}
+\SetExtraWord{teikar|i}
+\end{verbatim}
+
+Koska sanat etsitään luettelosta siinä järjestyksessä, kun ne on
+siihen laitettu, jos lisättävä sana on sama kuin pitemmän sanan
+alkuosa, pitempi sana pitää olla ensin. Esimerkiksi
+
+\begin{verbatim}
+\SetExtraWord{qwertyuiop}
+\SetExtraWord{qwerty}
+\end{verbatim}
+
+Muuten pitemmän sanan asemesta hakemistoon lisätään aina lyhyempi
+sana.
+
+Koska nämä sanat eivät siis ole Voikossa, niitä ei voi muuttaa
+perusmuotoon, mutta jos hakemistoon lisättävä merkkijono alkaa samalla
+tavalla kuin jokin tällä tavalla lisätyistä sanoista, sana lisätään
+hakemistoon. Jos lisätyssä sanassa on pystyviiva, sanaa tutkitaan vain
+siihen asti. Esimeriksi kaikki \verb=teikar=-alkuiset merkkijonot
+lisätään asiasanahakemistoon muodossa \verb=teikari= ja kaikki
+\verb=Hyvämä=-alkuiset sukunimet nimihakemistoon muodossa
+\verb=Hyvämäki=. (Mutta katso myös edellinen kohta.)
+
+Tämäkin toimii
+
+\begin{verbatim}
+\SetExtraSurname{Wirta|nen}
+\SetSurnameIndex{Wirtanen}{Virtanen}
+\end{verbatim}
+
+
+\subsection*{Mitä tarvitaan ja mistä ne saa?}
+
+\begin{itemize}
+\item voikkoindex: \\
+      \verb=https://github.com/ahomansikka/voikkoindex=
+      Koska luet tätä tekstiä, olet jo imuroinut tämän. (-:
+
+\item corevoikko: \\
+      \verb=https://github.com/voikko/corevoikko=
+      Uusin versio. Sen pitää olla käännetty niin, että perusmuodot
+      tulevat mukaan.
+
+\item lualibvoikko: \\
+      \verb=https://github.com/ahomansikka/lualibvoikko=
+
+\item lualatex: \\
+      Tulee ainakin TeXLiven mukana.
+
+\item splitidx: \\
+      Tulee ainakin TeXLiven mukana.
+
+\item luarocks: \\
+      Se voidaan asentaa komennolla
+      \verb=sudo apt istall luarocks=
+
+\item luautf8: \\
+      \url{https://github.com/starwing/luautf8}
+      Se voidaan asentaa komennolla
+      \verb=sudo luarocks install luautf8=
+\end{itemize}
+
+
+Jos lualatex ei löydä luautf8:aa, pitää määritellä ympäristömuuttuja
+(esim. tiedostossa .bashrc), joka kertoo missä tiedosto
+\verb=lua-utf8.so= on:
+
+\verb|export CLUAINPUTS=/usr/local/lib/lua/5.3//|
+
+Sen jälkeen voikkoindex'iä voi käyttää komennolla lualatex, esimerkiksi
+
+\begin{verbatim}
+lualatex tiedosto.tex
+splitindex <parametrit> tiedosto.idx
+lualatex tiedosto.tex
+\end{verbatim}
+
+
+\newpage \printindex[nimet]
+\newpage \printindex[paikat]
+\newpage \printindex[sanat]
+\end{document}

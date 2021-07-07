@@ -1,0 +1,136 @@
+%% Copyright (©) 2021 Hannu Väisänen
+%%
+%% This program is free software: you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation, either version 3 of the License, or
+%% (at your option) any later version.
+%%
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You should have received a copy of the GNU General Public License
+%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+\NeedsTeXFormat{LaTeX2e}[2005/12/01]
+\ProvidesPackage{voikkoindex}[2021-03-30 versio 0.1.]
+
+
+\RequirePackage{luacode}
+\RequirePackage{luapackageloader}
+\RequirePackage{keyval}
+\RequirePackage{kvoptions}
+\RequirePackage{templatetools}
+\RequirePackage{xparse}
+\RequirePackage{xstring}
+
+\IfPackageNotLoaded{splitidx}{\usepackage{splitidx}}
+
+
+\SetupKeyvalOptions{
+  family=vi@opt,
+  prefix=vi@opt@
+}
+\DeclareStringOption["voikkoindex.log"]{logfile}
+\DeclareStringOption["fi"]{langcode}
+\DeclareStringOption["/usr/local/lib/voikko"]{path}
+\DeclareStringOption[Henkilöhakemisto]{nimet}
+\DeclareStringOption[Paikannimihakemisto]{paikat}
+\DeclareStringOption[Asiahakemisto]{sanat}
+\ProcessLocalKeyvalOptions{vi@opt}
+
+
+\directlua{
+  require "lualibs"
+  voikkoindex = require("voikkoindex.lua")
+  voikkoindex.init_voikkoindex (\vi@opt@langcode, \vi@opt@path, \vi@opt@logfile)
+}
+
+
+\NewDocumentCommand{\SetExtraSurname}{m}{%
+  \luadirect{voikkoindex.set_extra_surname("#1")}%
+}
+
+\NewDocumentCommand{\SetExtraPlaceName}{m}{%
+  \luadirect{voikkoindex.set_extra_place_name("#1")}%
+}
+
+\NewDocumentCommand{\SetExtraWord}{m}{%
+  \luadirect{voikkoindex.set_extra_word("#1")}%
+}
+
+
+\NewDocumentCommand{\SetSurnameIndex}{m m}{%
+  \luadirect{voikkoindex.set_surname_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+}
+
+\NewDocumentCommand{\SetPlaceNameIndex}{m m}{%
+  \luadirect{voikkoindex.set_place_name_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+}
+
+\NewDocumentCommand{\SetWordIndex}{m m}{%
+  \luadirect{voikkoindex.set_word_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+}
+
+
+\NewDocumentCommand{\VXN}{m m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_surname("\luaescapestring{#2}")}}%
+   \IfValueTF{#3}{#1 #2#3\sindex[nimet]{\LuaText, #1}}{#1 #2\sindex[nimet]{\LuaText, #1}}}%
+}
+
+
+\NewDocumentCommand{\VXP}{m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_place_name("\luaescapestring{#1}")}}%
+   \IfValueTF{#2}{#1#2\sindex[paikat]{\LuaText}}{#1\sindex[paikat]{\LuaText}}}%
+}
+
+
+\NewDocumentCommand{\VXS}{m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word("\luaescapestring{#1}")}}%
+   \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
+}
+
+\NewDocumentCommand{\VXA}{m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_lowercase("\luaescapestring{#1}")}}%
+   \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
+}
+
+\NewDocumentCommand{\VXI}{m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_capitalize("\luaescapestring{#1}")}}%
+   \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
+}
+
+
+\NewDocumentCommand{\VXL}{m o}{%
+  \luadirect{voikkoindex.print_place_name_and_word("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+}
+
+
+\newcommand{\vxn}[1]{\sindex[nimet]{#1}}
+\newcommand{\vxp}[1]{\sindex[paikat]{#1}}
+\newcommand{\vxs}[1]{\sindex[sanat]{#1}}
+
+%% Esim. \vxvon{Johan Wolfgang}{von}{Goethe}
+%%
+\newcommand{\vxvon}[3]{\vxn{#3, #1@#2 #3, #1}}
+
+
+%% Esim. \VXVON{Johan Wolfgang}{von}{Goethelle}[.]
+%%
+\NewDocumentCommand{\VXVON}{m m m o}{%
+  \IfValueTF{#4}%
+    {#1 #2 #3#4\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname("\luaescapestring{#3}")}}}%
+    {#1 #2 #3\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname("\luaescapestring{#3}")}}}%
+}
+
+
+\newindex[\vi@opt@nimet]{nimet}
+\newindex[\vi@opt@paikat]{paikat}
+\newindex[\vi@opt@sanat]{sanat}
+
+%\SetPlaceNameIndex{Karpaatti}{Karpaatit}
+%\SetPlaceNameIndex{Yhdysvalta}{Yhdysvallat}
+
+\endinput
