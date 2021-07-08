@@ -61,15 +61,19 @@ end
 local function find_extra_word (word, data)
   if data == nil then return nil end
 
-  --logfile:write ("find_extra_word a " .. word .. "\n")
+--  logfile:write ("find_extra_word a " .. word .. "\n")
+
   for k, v in ipairs (data) do
-    local first, last = utf8.find (word, v[1], 1, true)
-    if utf8.find (word, v[1], 1, true) == 1 then
-      --logfile:write ("find_extra_word b " .. word .. " " .. v[2] .. " " .. first .. " " .. last .. "\n")
+--    logfile:write ("find_extra_word b " .. word .. " " .. k .. " " .. v[1] .. " " .. v[2] .. "\n")
+
+    local first, last = utf8.find (utf8.lower(word), utf8.lower(v[1]), 1, true)
+
+    if first ~= nil then
+--      logfile:write ("find_extra_word c " .. word .. " " .. v[2] .. " " .. first .. " " .. last .. "\n")
       return v[2]
     end
   end
-  --logfile:write ("find_extra_word c " .. word .. " nil\n")
+--  logfile:write ("find_extra_word d " .. word .. " nil\n")
   return nil
 end
 
@@ -122,23 +126,6 @@ function split (word, regex)
   return list
 end
 
-
--- Yhdistetään listan 'list' alkiot first..last käyttäen erottimena 'sep'iä.
--- Esim. join("aa", "bbb", "cc", "dd", 1, 3, " ") => "aa bbb cc"
---
-function join (list, first, last, sep)
-  local s = ""
-  for i = first, last, 1 do
-    print (list[i])
-    s = s .. list[i]
-    if i < last then
-      s = s .. " "
-    end
-  end
-  return s
-end
-
-
 ----------------------------------------------------------------------
 
 -- Oletetaan, että funktiota cleanup(word) on kutsuttu ennen tämän funktion kutsumista.
@@ -172,20 +159,20 @@ local function find_baseform (word, index, extra_word, f)
     end
   end
 
---  logfile:write ("find_baseform f " .. word .. "\n")
+  logfile:write ("find_baseform f " .. word .. "\n")
 
   local w = find_extra_word (word, extra_word)
   if w ~= nil then
     local u = find_index (w, index)
     if u ~= nil then
---      logfile:write ("find_baseform g " .. w .. " " .. u .. "\n")
+      logfile:write ("find_baseform g " .. w .. " " .. u .. "\n")
       return u
     end
---    logfile:write ("find_baseform h " .. w .. "\n")
+    logfile:write ("find_baseform h " .. w .. "\n")
     return w
   end
 
---  logfile:write ("find_baseform ö nil\n")
+  logfile:write ("find_baseform ö " .. word .. ": ei perusmuotoa.\n")
   return nil
 end
 
@@ -336,8 +323,8 @@ end
 -- Muutetaan merkkijono 'word' merkkijonoksi, joka voidaan laittaa hakemistoon.
 --
 function u.get_indexed_word (word, extra_data)
-  function f(a)
-    return a["CLASS"] == "nimisana"
+  local function classf (a)
+    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana"
   end
 
   --logfile:write ("get_indexed_word a [" .. word .. "]\n")
@@ -355,7 +342,7 @@ function u.get_indexed_word (word, extra_data)
   if s ~= nil then
     logfile:write ("get_indexed_word d [" .. s .. "]\n")
     if #list > 1 then
-      local u = join(list,1,#list-1," ") .. " " .. beautify (list[#list], s)
+      local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], s)
       logfile:write ("get_indexed_word e [" .. u .. "]\n")
       return u
     else
@@ -500,13 +487,13 @@ end
 local separator = "|"
 
 local function set_extra (word, extra, count)
---  logfile:write ("set_extra a " .. word .. " " .. count[1] .. "\n")
+  --logfile:write ("set_extra a " .. word .. " " .. count[1] .. "\n")
   local n = utf8.find (word, separator, 1, true)
   if n == nil then
---    logfile:write ("set_extra b " .. word .. " " .. word .. " " .. count[1] .. "\n")
+    --logfile:write ("set_extra b " .. word .. " " .. word .. " " .. count[1] .. "\n")
     extra[count[1]] = {word, word}
   else
---    logfile:write ("set_extra c " .. utf8.sub(word,1,n-1) .. " " ..  utf8.gsub (word, separator, "") .. "\n")
+    --logfile:write ("set_extra c " .. utf8.sub(word,1,n-1) .. " " ..  utf8.gsub (word, separator, "") .. "\n")
     extra[count[1]] = {utf8.sub(word,1,n-1), utf8.gsub (word, separator, "")}
   end
   count[1] = count[1] + 1
