@@ -100,9 +100,11 @@ end
 
 
 local function cleanup (s)
-  --logfile:write ("cleanup [" .. s .. "]\n")
+--  logfile:write ("cleanup1 [" .. s .. "]\n")
   --                      Ehdollinen ta\-vutus tulee tällaiseksi!
-  local t = utf8.gsub (s, "\\protect \\discretionary {\\char \\hyphenchar \\font }{}{}", "\\-")
+--local t = utf8.gsub (s, "\\protect \\discretionary {\\char \\hyphenchar \\font }{}{}", "\\-")
+  local t = utf8.gsub (s, "\\protect [\\][-]", "")
+--  logfile:write ("cleanup2 [" .. s .. "]\n")
   t = utf8.gsub (t, "\"", "")
   t = utf8.gsub (t, "\\protect \\emph  {", "")
   t = utf8.gsub (t, "\n", " ")
