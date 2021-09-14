@@ -72,6 +72,7 @@ Voikkoindex määrittelee 17 komentoa
     \NewDocumentCommand{\VXA}{m o}
     \NewDocumentCommand{\VXI}{m o}
     \NewDocumentCommand{\VXL}{m o}
+    \NewDocumentCommand{\VXF}{m m o}
 
     \NewDocumentCommand{\SetExtraSurname}{m}
     \NewDocumentCommand{\SetExtraPlaceName}{m}
@@ -141,28 +142,58 @@ Asiasanat
     \VXI{<asiasana(t)>}[<välimerkki>]
     \VXS{<asiasana(t)>}[<välimerkki>]
 
-Jos asiasanassa on useampi kuin yksi sana, vain viimeinen sana muutetaan
-perusmuotoon (tähän on tulossa korjaus)
-
-    \VXS{uudelle nuorisoseuralle}[.] =>
-    uudelle nuorisoseuralle.\vxs{uudelle nuorisoseura}
-
 `\VXA` toimii kuten `\VXS`, mutta muuttaa kaikki kirjaimet pieniksi
 kirjaimiksi. A niin kuin alas.
 
-`\VXI` toimii kuten `\VXS`, mutta muuttaa jokaisen sanan ensimmäisen
-kirjaimen isoksi kirjaimeksi ja muut pieniksi. I niin kuin isolla.
+`\VXI` toimii kuten `\VXS`, mutta muuttaa sanan ensimmäisen kirjaimen
+isoksi kirjaimeksi ja muut pieniksi. I niin kuin isolla.
+
+`\VXS` muuttaa sanan perusmuotoon, mutta ei muuta kirjainten kokoa.
+
+Jos asiasanassa on useampi kuin yksi sana, vain viimeinen muutetaan
+perusmuotoon, esimerkiksi
+
+    \VXS{auringon maassa}[,] =>
+      auringon maassa[,]\vxs{auringon maa}
+
+Mikäli tämä ei ole tarkoitus, käytä komentoa `\VXF`.
 
 Listat
 ======
 
-    \VXL{<erisnimi> <sana>}[<välimerkki>]
+    \VXF{<sanat>}{<formaatti>}[<välimerkki>]
 
-Argumentissa on kaksi sanaa, joista ensimmäinen on erisnimi, joka
-muutetaan perusmuotoon ja laitetaan paikannimihakemistoon, ja toinen on
-nimisana. Myös se muutetaan perusmuotoon ja asiahakemistoon laitetaan
-molemmat sanat niin, että vain jälkimmäinen on perusmuodossa.
 Esimerkiksi
+
+    \VXF{Helsingin uudelle nuorisoseuralle}{p=,s,s} =>
+      Helsingin\vxp{Helsinki} uusi
+      nuorisoseura\vxs{Helsingin uusi nuorisoseura}
+
+    \VXF{Helsingin seudun nuorisoseurassa}{p=,=,s}
+      Helsingin\vxp{Helsinki} seudun
+      nuorisoseurassa\vxs{Helsingin seudun nuorisoseura}
+
+Ensimmäinen parametri on lista sanoja ja toinen parametri sanojen
+formaatti pilkuilla toisistaan erotettuina. Sallitut formaatit ovat
+
+    p=  =
+    ps  s
+    pa  a
+    pi  i
+    py  y
+
+Jos formaatin ensimmäinen kirjain on `p` sana oletetaan paikannimeksi ja
+se laitetaan paikannimihakemistoon perusmuodossa. Muut formaatit ovat
+
+    = sanalle ei tehdä mitään
+    s sana muutetaan perusmuotoon
+    a perusmuoto muutetaan pieniksi kirjaimiksi (alas)
+    i perusmuodon eka kirjain muutetaan isoksi, muut pieniksi (isolla)
+    y perusmuoto muutetaan isoiksi kirjaimiksi (ylös)
+
+`\VXL` on sama asia kuin `\VXF{<lista>}{p=,s}[<välimerkki>]`
+
+mutta &lt;lista&gt;ssa voi olla vain kaksi sanaa. Esimerkiksi
 
     \VXL{Helsingin nuorisoseuralle}[.] =>
     Helsingin\vxp{Helsinki} nuorisoseuralle.\vxs{Helsingin nuorisoseura}

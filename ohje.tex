@@ -1,3 +1,7 @@
+%% Muunnos markdown'iksi:
+%% pandoc -f latex -t markdown_strict ohje.tex
+
+
 \documentclass[12pt]{article}
 \usepackage{fontspec}
 \usepackage{polyglossia}
@@ -118,6 +122,7 @@ Voikkoindex määrittelee 17 komentoa
 \NewDocumentCommand{\VXA}{m o}
 \NewDocumentCommand{\VXI}{m o}
 \NewDocumentCommand{\VXL}{m o}
+\NewDocumentCommand{\VXF}{m m o}
 
 \NewDocumentCommand{\SetExtraSurname}{m}
 \NewDocumentCommand{\SetExtraPlaceName}{m}
@@ -205,35 +210,71 @@ Etunimiä ei muuteta perusmuotoon, mutta sukunimi muutetaan.
 \VXS{<asiasana(t)>}[<välimerkki>]
 \end{verbatim}
 
-Jos asiasanassa on useampi kuin yksi sana, vain viimeinen sana
-muutetaan perusmuotoon (tähän on tulossa korjaus)
-
-\begin{verbatim}
-\VXS{uudelle nuorisoseuralle}[.] =>
-uudelle nuorisoseuralle.\vxs{uudelle nuorisoseura}
-\end{verbatim}
-
-
 \verb=\VXA= toimii kuten \verb=\VXS=, mutta muuttaa kaikki kirjaimet
 pieniksi kirjaimiksi. A niin kuin alas.
 
-\verb=\VXI= toimii kuten \verb=\VXS=, mutta muuttaa jokaisen sanan
+\verb=\VXI= toimii kuten \verb=\VXS=, mutta muuttaa sanan
 ensimmäisen kirjaimen isoksi kirjaimeksi ja muut pieniksi.
 I niin kuin isolla.
+
+\verb=\VXS= muuttaa sanan perusmuotoon, mutta ei muuta kirjainten kokoa.
+
+Jos asiasanassa on useampi kuin yksi sana, vain viimeinen muutetaan
+perusmuotoon, esimerkiksi
+
+\begin{verbatim}
+\VXS{auringon maassa}[,] =>
+  auringon maassa[,]\vxs{auringon maa}
+\end{verbatim}
+
+Mikäli tämä ei ole tarkoitus, käytä komentoa \verb=\VXF=.
 
 
 \section*{Listat}
 
-
 \begin{verbatim}
-\VXL{<erisnimi> <sana>}[<välimerkki>]
+\VXF{<sanat>}{<formaatti>}[<välimerkki>]
 \end{verbatim}
 
-Argumentissa on kaksi sanaa, joista ensimmäinen on erisnimi, joka
-muutetaan perusmuotoon ja laitetaan paikannimihakemistoon, ja toinen
-on nimisana. Myös se muutetaan perusmuotoon ja asiahakemistoon
-laitetaan molemmat sanat niin, että vain jälkimmäinen on
-perusmuodossa. Esimerkiksi
+Esimerkiksi
+
+\begin{verbatim}
+\VXF{Helsingin uudelle nuorisoseuralle}{p=,s,s} =>
+  Helsingin\vxp{Helsinki} uusi
+  nuorisoseura\vxs{Helsingin uusi nuorisoseura}
+
+\VXF{Helsingin seudun nuorisoseurassa}{p=,=,s}
+  Helsingin\vxp{Helsinki} seudun
+  nuorisoseurassa\vxs{Helsingin seudun nuorisoseura}
+\end{verbatim}
+
+Ensimmäinen parametri on lista sanoja ja toinen parametri sanojen
+formaatti pilkuilla toisistaan erotettuina. Sallitut formaatit ovat
+
+\begin{verbatim}
+p=  =
+ps  s
+pa  a
+pi  i
+py  y
+\end{verbatim}
+
+Jos formaatin ensimmäinen kirjain on \verb=p= sana oletetaan
+paikannimeksi ja se laitetaan paikannimihakemistoon perusmuodossa.
+Muut formaatit ovat
+
+\begin{verbatim}
+= sanalle ei tehdä mitään
+s sana muutetaan perusmuotoon
+a perusmuoto muutetaan pieniksi kirjaimiksi (alas)
+i perusmuodon eka kirjain muutetaan isoksi, muut pieniksi (isolla)
+y perusmuoto muutetaan isoiksi kirjaimiksi (ylös)
+\end{verbatim}
+
+
+\verb=\VXL= on sama asia kuin \verb|\VXF{<lista>}{p=,s}[<välimerkki>]|
+
+mutta <lista>ssa voi olla vain kaksi sanaa. Esimerkiksi
 
 \begin{verbatim}
 \VXL{Helsingin nuorisoseuralle}[.] =>

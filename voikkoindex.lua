@@ -100,7 +100,7 @@ end
 
 
 local function cleanup (s)
---  logfile:write ("cleanup1 [" .. s .. "]\n")
+  logfile:write ("cleanup1 [" .. s .. "]\n")
   --                      Ehdollinen ta\-vutus tulee tällaiseksi!
 --local t = utf8.gsub (s, "\\protect \\discretionary {\\char \\hyphenchar \\font }{}{}", "\\-")
   local t = utf8.gsub (s, "\\protect [\\][-]", "")
@@ -324,7 +324,7 @@ end
 
 -- Muutetaan merkkijono 'word' merkkijonoksi, joka voidaan laittaa hakemistoon.
 --
-function u.get_indexed_word (word, extra_data)
+function u.get_indexed_word (word, extra_word)
   local function classf (a)
     return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana"
   end
@@ -439,52 +439,82 @@ function u.print_word_capitalize (word)
   end
 end
 
+----------------------------------------------------------------------
 
--- Esimerkiksi \VXL{Helsingin nuorisoseuralle}[.] =>
---             Helsingin\vxp{Helsinki} nuorisoseuralle.\vxs{Helsingin nuorisoseura}
---
-function u.print_place_name_and_word (word, after)
-  logfile:write ("print_place_name_and_word A " .. word .. " [" .. after .. "]\n")
-
-  local w = cleanup (word)
-  logfile:write ("print_place_name_and_word B " .. w .. "\n")
-
-  local list = split (w, "%S+")
-  if #list ~= 2 then
-    error ("place_name_and_word " .. word .. ": ei taida olla muotoa Pakannimi sana.")
+local function iterator (word, format)
+  local i = 0
+  local size = #word
+  return function()
+    i = i + 1
+    if i <= size then
+      return word[i], format[i]
+    end
   end
-
-  local w1 = utf8.gsub (list[1], "[\\][-]", "")
-  local place_baseform = u.get_place_name (w1)
-  if place_baseform == nil then
-    error ("place_name_and_word " .. list[1] .. ": ei perusmuotoa.")
-  end
-  --logfile:write ("print_place_name_and_word C [" .. list[1] .. "] [" .. w1 .. "] [" .. place_baseform .. "]\n")
+end
 
 
-  local w2 = utf8.gsub (list[2], "[\\][-]", "")
-  local last_baseform = find_baseform (w2, baseform_index, extra_word, nil)
-  if last_baseform == nil then
-    error ("place_name_and_word " .. list[2] .. ": ei perusmuotoa.")
-  end
-  local nice_word = beautify (w2, last_baseform)
-
-  --logfile:write ("print_place_name_and_word D [" .. list[2] .. "] [" .. w2 .. "] [" .. last_baseform .. "]\n")
-  --logfile:write ("print_place_name_and_word E [" .. last_baseform .. "]\n")
-  --logfile:write ("print_place_name_and_word F [" .. w2 .. "]\n")
-  --logfile:write ("print_place_name_and_word G [" .. nice_word .. "]\n")
-
-  if after == "-NoValue-" then
-       tex.sprint (list[1] .. "\\sindex[paikat]{" .. place_baseform .. "} " .. list[2] .. "\\sindex[sanat]{" .. w1 .. " " .. nice_word .. "}")
-    --logfile:write (list[1] .. "\\sindex[paikat]{" .. place_baseform .. "} " .. list[2] .. "\\sindex[sanat]{" .. w1 .. " " .. nice_word .. "}\n")
+local function get_bf (word, format)
+  if utf8.sub (format, 1, 1) == "p" then
+    return u.get_place_name (word)
   else
-       tex.sprint (list[1] .. "\\sindex[paikat]{" .. place_baseform .. "} " .. list[2] .. after .. "\\sindex[sanat]{" .. w1 .. " " .. nice_word .. "}")
-    --logfile:write (list[1] .. "\\sindex[paikat]{" .. place_baseform .. "} " .. list[2] .. after .. "\\sindex[sanat]{" .. w1 .. " " .. nice_word .. "}\n")
+    local p = u.get_indexed_word (word, extra_word)
+    if p == nil then
+      p = u.get_surname (word)
+    end
+    if p == nil then
+      p = u.get_place_name (word)
+    end
+    return p
+  end
+end
+
+
+function u.print_formatted (word, format, after, n)
+  logfile:write ("print_formatted A [" .. word .. "] [" .. format .. "] [" .. after .. "] [" .. n .. "]\n")
+  local wo = split (word,  "(%a+)")
+  local fo = split (format, "([^,]+)")
+  if n > 0 and n ~= #wo then
+    error ("Parametrissa 'word' pitää olla " .. n .. " sanaa. On " .. #wo .. " sanaa.")
+  end
+  if #wo ~= #fo then
+    error ("Sanoja ja muotoilukoodeja ei ole yhtä monta.")
+  end
+
+  local list = {}
+  local text = {}
+
+  for w, f in iterator (wo, fo) do
+--    logfile:write ("print_formatted B " .. w .. " " .. f .. "\n")
+    local baseform = get_bf (w, f)
+--    logfile:write ("print_formatted B " .. baseform .. " " .. utf8.sub (f, 1, 1) .. "\n")
+    local g = utf8.sub (f, #f)
+    if utf8.sub (f, 1, 1) == "p" then
+     table.insert (text, w .. "\\vxp{" .. baseform .. "}")
+    else
+      table.insert (text, w)
+    end
+        if g == "=" then table.insert (list, cleanup (w))
+    elseif g == "s" then table.insert (list, beautify (w, baseform))
+    elseif g == "a" then table.insert (list, utf8.lower (baseform))
+    elseif g == "i" then table.insert (list, capitalize (baseform))
+    elseif g == "y" then table.insert (list, utf8.upper (baseform))
+    end
+  end
+  local orig = table.concat (text, " ")
+  local result = table.concat (list, " ")
+--  logfile:write ("print_formatted C " .. result .. "\n")
+--  logfile:write ("print_formatted D " .. orig .. "\n")
+--  for i = 1, #list do
+--    logfile:write ("print_formatted E " .. list[i] .."\n")
+--  end
+  if after == "-NoValue-" then
+    tex.sprint (orig .. "\\sindex[sanat]{" .. result .. "}")
+  else
+    tex.sprint (orig .. after .. "\\sindex[sanat]{" .. result .. "}")
   end
 end
 
 ----------------------------------------------------------------------
-
 
 local separator = "|"
 

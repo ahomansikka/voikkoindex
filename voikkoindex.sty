@@ -104,7 +104,11 @@
 
 
 \NewDocumentCommand{\VXL}{m o}{%
-  \luadirect{voikkoindex.print_place_name_and_word("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+  \luadirect{voikkoindex.print_formatted("\luaescapestring{#1}", "\luaescapestring{p=,s}", "\luaescapestring{#2}", 2)}%
+}
+
+\NewDocumentCommand{\VXF}{m m o}{%
+  \luadirect{voikkoindex.print_formatted("\luaescapestring{#1}", "\luaescapestring{#2}", "\luaescapestring{#3}", 0)}%
 }
 
 
