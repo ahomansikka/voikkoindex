@@ -339,7 +339,7 @@ function u.get_indexed_word (word, extra_word)
 
   logfile:write ("get_indexed_word c [" .. list[#list] .. "]\n")
 
-  local s = find_baseform (list[#list], word_index, extra_word, f)
+  local s = find_baseform (list[#list], word_index, extra_word, classf)
 
   if s ~= nil then
     logfile:write ("get_indexed_word d [" .. s .. "]\n")
