@@ -324,11 +324,7 @@ end
 
 -- Muutetaan merkkijono 'word' merkkijonoksi, joka voidaan laittaa hakemistoon.
 --
-function u.get_indexed_word (word, extra_word)
-  local function classf (a)
-    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana"
-  end
-
+local function get_indexed_word_f (word, extra_word, classf)
   --logfile:write ("get_indexed_word a [" .. word .. "]\n")
   local w = cleanup (word)
   --logfile:write ("get_indexed_word b [" .. w .. "]\n")
@@ -364,6 +360,13 @@ function u.get_indexed_word (word, extra_word)
   return nil
 end
 
+
+function u.get_indexed_word (word, extra_word)
+  local function classf (a)
+    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana"
+  end
+  return get_indexed_word_f (word, extra_word, classf)
+end
 
 ----------------------------------------------------------------------
 
@@ -426,6 +429,18 @@ function u.print_word_lowercase (word)
 end
 
 
+function u.print_word_uppercase (word)
+  local w = utf8.lower (word)
+  local baseform = u.get_indexed_word (w, extra_word)
+  if baseform ~= nil then
+    local b = utf8.upper (baseform)
+    tex.sprint (b)
+  else
+    error ("word " .. word .. ": ei perusmuotoa.")
+  end
+end
+
+
 -- Perusmuodossa eka kirjain isolla, muut pienellä, esim: sUoMelle -> Suomi
 --
 function u.print_word_capitalize (word)
@@ -453,11 +468,30 @@ local function iterator (word, format)
 end
 
 
+local function get_bf_value (word, extra_word, klass)
+  local function f1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimilaatusana" end
+  local function f2(a) return a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana" end
+  local function f3(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana" end
+
+  if klass == "N" then
+    return get_indexed_word_f (word, extra_word, f1)
+  elseif klass == "L" then
+    return get_indexed_word_f (word, extra_word, f2)
+  else
+    return get_indexed_word_f (word, extra_word, f3)
+  end
+end
+
+
 local function get_bf (word, format)
+  local function fun1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimilaatusana" end
+
   if utf8.sub (format, 1, 1) == "p" then
     return u.get_place_name (word)
   else
-    local p = u.get_indexed_word (word, extra_word)
+--    local p = get_indexed_word_f (word, extra_word, fun1)
+    local p = get_bf_value (word, extra_word, utf8.sub(format,#format))
+--logfile:write ("get_bf A " .. p .. " " .. format .. " " .. #format .. " " .. utf8.sub(format,#format) .. "\n")
     if p == nil then
       p = u.get_surname (word)
     end
@@ -484,10 +518,15 @@ function u.print_formatted (word, format, after, n)
   local text = {}
 
   for w, f in iterator (wo, fo) do
---    logfile:write ("print_formatted B " .. w .. " " .. f .. "\n")
+    logfile:write ("print_formatted B " .. w .. " " .. f .. "\n")
     local baseform = get_bf (w, f)
---    logfile:write ("print_formatted B " .. baseform .. " " .. utf8.sub (f, 1, 1) .. "\n")
+    logfile:write ("print_formatted B " .. baseform .. " " .. utf8.sub (f, 1, 1) .. "\n")
     local g = utf8.sub (f, #f)
+--logfile:write ("print formatted 1 " .. word .. " " .. format .. " " .. g .. "\n")
+    if g == "N" or g == "L" then
+      g = utf8.sub (f, #f-1, #f-1)
+    end
+--logfile:write ("print formatted 2 " .. word .. " " .. format .. " " .. g .. "\n")
     if utf8.sub (f, 1, 1) == "p" then
      table.insert (text, w .. "\\vxp{" .. baseform .. "}")
     else
@@ -498,6 +537,7 @@ function u.print_formatted (word, format, after, n)
     elseif g == "a" then table.insert (list, utf8.lower (baseform))
     elseif g == "i" then table.insert (list, capitalize (baseform))
     elseif g == "y" then table.insert (list, utf8.upper (baseform))
+    else error ("Väärä muotoilukoodi '" .. g .. "'.")
     end
   end
   local orig = table.concat (text, " ")

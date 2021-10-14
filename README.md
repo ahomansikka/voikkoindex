@@ -71,6 +71,7 @@ Voikkoindex määrittelee 17 komentoa
 
     \NewDocumentCommand{\VXA}{m o}
     \NewDocumentCommand{\VXI}{m o}
+    \NewDocumentCommand{\VXY}{m o}
     \NewDocumentCommand{\VXL}{m o}
     \NewDocumentCommand{\VXF}{m m o}
 
@@ -141,6 +142,7 @@ Asiasanat
     \VXA{<asiasana(t)>}[<välimerkki>]
     \VXI{<asiasana(t)>}[<välimerkki>]
     \VXS{<asiasana(t)>}[<välimerkki>]
+    \VXY{<asiasana(t)>}[<välimerkki>]
 
 `\VXA` toimii kuten `\VXS`, mutta muuttaa kaikki kirjaimet pieniksi
 kirjaimiksi. A niin kuin alas.
@@ -149,6 +151,9 @@ kirjaimiksi. A niin kuin alas.
 isoksi kirjaimeksi ja muut pieniksi. I niin kuin isolla.
 
 `\VXS` muuttaa sanan perusmuotoon, mutta ei muuta kirjainten kokoa.
+
+`\VXY` toimii kuten `\VXS`, mutta muuttaa kaikki kirjaimet isoiksi
+kirjaimiksi. Y niin kuin ylös
 
 Jos asiasanassa on useampi kuin yksi sana, vain viimeinen muutetaan
 perusmuotoon, esimerkiksi
@@ -190,6 +195,16 @@ se laitetaan paikannimihakemistoon perusmuodossa. Muut formaatit ovat
     a perusmuoto muutetaan pieniksi kirjaimiksi (alas)
     i perusmuodon eka kirjain muutetaan isoksi, muut pieniksi (isolla)
     y perusmuoto muutetaan isoiksi kirjaimiksi (ylös)
+
+Formaatin lopussa voi olla jompikumpi kirjaimista `NL`.
+
+    N perusmuodoksi hyväksytään vain nimisana tai nimilaatusana
+    L perusmuodoksi hyväksytään vain laatusana tai nimilaatusana
+
+Tämä on tarpeen, koska eräät taivutusmuodot voivat olla sekä nimisanan
+että inen-loppuisen laatusanan taivutusmuotoja, esimerkiksi
+
+`talvista => talvi, talvinen`
 
 `\VXL` on sama asia kuin `\VXF{<lista>}{p=,s}[<välimerkki>]`
 

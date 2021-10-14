@@ -121,6 +121,7 @@ Voikkoindex määrittelee 17 komentoa
 
 \NewDocumentCommand{\VXA}{m o}
 \NewDocumentCommand{\VXI}{m o}
+\NewDocumentCommand{\VXY}{m o}
 \NewDocumentCommand{\VXL}{m o}
 \NewDocumentCommand{\VXF}{m m o}
 
@@ -208,6 +209,7 @@ Etunimiä ei muuteta perusmuotoon, mutta sukunimi muutetaan.
 \VXA{<asiasana(t)>}[<välimerkki>]
 \VXI{<asiasana(t)>}[<välimerkki>]
 \VXS{<asiasana(t)>}[<välimerkki>]
+\VXY{<asiasana(t)>}[<välimerkki>]
 \end{verbatim}
 
 \verb=\VXA= toimii kuten \verb=\VXS=, mutta muuttaa kaikki kirjaimet
@@ -218,6 +220,9 @@ ensimmäisen kirjaimen isoksi kirjaimeksi ja muut pieniksi.
 I niin kuin isolla.
 
 \verb=\VXS= muuttaa sanan perusmuotoon, mutta ei muuta kirjainten kokoa.
+
+\verb=\VXY= toimii kuten \verb=\VXS=, mutta muuttaa kaikki kirjaimet
+isoiksi kirjaimiksi. Y niin kuin ylös
 
 Jos asiasanassa on useampi kuin yksi sana, vain viimeinen muutetaan
 perusmuotoon, esimerkiksi
@@ -270,6 +275,18 @@ a perusmuoto muutetaan pieniksi kirjaimiksi (alas)
 i perusmuodon eka kirjain muutetaan isoksi, muut pieniksi (isolla)
 y perusmuoto muutetaan isoiksi kirjaimiksi (ylös)
 \end{verbatim}
+
+Formaatin lopussa voi olla jompikumpi kirjaimista \verb=NL=.
+
+\begin{verbatim}
+N perusmuodoksi hyväksytään vain nimisana tai nimilaatusana
+L perusmuodoksi hyväksytään vain laatusana tai nimilaatusana
+\end{verbatim}
+
+Tämä on tarpeen, koska eräät taivutusmuodot voivat olla sekä nimisanan
+että inen-loppuisen laatusanan taivutusmuotoja, esimerkiksi
+
+\verb|talvista => talvi, talvinen|
 
 
 \verb=\VXL= on sama asia kuin \verb|\VXF{<lista>}{p=,s}[<välimerkki>]|

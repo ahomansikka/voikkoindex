@@ -112,6 +112,12 @@
 }
 
 
+\NewDocumentCommand{\VXY}{m o}{%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_uppercase("\luaescapestring{#1}")}}%
+   \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
+}
+
+
 \newcommand{\vxn}[1]{\sindex[nimet]{#1}}
 \newcommand{\vxp}[1]{\sindex[paikat]{#1}}
 \newcommand{\vxs}[1]{\sindex[sanat]{#1}}
