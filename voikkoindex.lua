@@ -109,6 +109,7 @@ local function cleanup (s)
   t = utf8.gsub (t, "\\protect \\emph  {", "")
   t = utf8.gsub (t, "\n", " ")
   t = utf8.gsub (t, "\\emph{", "")
+  t = utf8.gsub (t, "[,.]}", "")
   t = utf8.gsub (t, "}", "")
   return t
 end
@@ -486,7 +487,11 @@ end
 local function get_bf (word, format)
   local function fun1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimilaatusana" end
 
-  if utf8.sub (format, 1, 1) == "p" then
+  if format == "=" then
+    -- Jos sanaa ei formatoida, sitä ei tarvitse muuttaa perusmuotoon.
+    --
+    return word
+  elseif utf8.sub (format, 1, 1) == "p" then
     return u.get_place_name (word)
   else
 --    local p = get_indexed_word_f (word, extra_word, fun1)
@@ -505,7 +510,8 @@ end
 
 function u.print_formatted (word, format, after, n)
   logfile:write ("print_formatted A [" .. word .. "] [" .. format .. "] [" .. after .. "] [" .. n .. "]\n")
-  local wo = split (word,  "(%a+)")
+  local uu = cleanup (word)
+  local wo = split (uu,  "([%a-]+)")
   local fo = split (format, "([^,]+)")
   if n > 0 and n ~= #wo then
     error ("Parametrissa 'word' pitää olla " .. n .. " sanaa. On " .. #wo .. " sanaa.")
