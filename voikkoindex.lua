@@ -470,9 +470,9 @@ end
 
 
 local function get_bf_value (word, extra_word, klass)
-  local function f1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimilaatusana" end
-  local function f2(a) return a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana" end
-  local function f3(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimilaatusana" end
+  local function f1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana" end
+  local function f2(a) return a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" end
+  local function f3(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" end
 
   if klass == "N" then
     return get_indexed_word_f (word, extra_word, f1)
@@ -485,7 +485,7 @@ end
 
 
 local function get_bf (word, format)
-  local function fun1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimilaatusana" end
+  local function fun1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana" end
 
   if format == "=" then
     -- Jos sanaa ei formatoida, sitä ei tarvitse muuttaa perusmuotoon.
