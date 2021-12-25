@@ -136,6 +136,12 @@ Sukunimet ja paikannimet
 
 Etunimiä ei muuteta perusmuotoon, mutta sukunimi muutetaan.
 
+Paikannimessä voi olla useampi kuin yksi sana. Tällöin vain viimeinen
+sana muutetaan perusmuotoon ja muut pysyvät ennallaan, esimerkiksi
+
+    \VXP{Etelä-Suomen läänissä} =>
+      Etelä-Suomen läänissä\vxp{Etelä-Suomen lääni}
+
 Asiasanat
 =========
 

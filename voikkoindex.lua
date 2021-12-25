@@ -50,6 +50,41 @@ local surname_index_count = {[1] = 1}
 local place_name_index_count = {[1] = 1}
 local word_index_count = {[1] = 1}
 
+
+-- Palautaan 'u':n ja 'v':n yhteisen alkuosan indeksi.
+-- Esim. ('abcd" 'abcxyx') -> 3
+--
+local function common_prefix_index (u, v)
+  local last = math.min (#u, #v)
+  for i = 1, last do
+    if utf8.ncasecmp (utf8.sub(u,i,i), utf8.sub(v,i,i)) ~= 0 then
+      return i-1
+    end
+  end
+  return last
+end
+
+
+
+-- Tehdään sanasta nätimpi. (-:
+--
+local function beautify (s, t)
+  if s == nil or t == nil then
+    error ("beautify: s == nil or t ==  nil")
+  end
+  local n = common_prefix_index (s, t)
+  if n == 0 then
+    return ""
+  end
+  local x = utf8.sub (s, 1, n)
+  local y = utf8.sub (t, n+1)
+  local z = x .. y
+  assert (z ~= nil)
+--  --logfile:write ("beautify " .. s .. " " .. t .. "\n")
+  return z
+end
+
+
 -- Muuta sanan eka kirjain isoksi ja muut pieneksi.
 --
 local function capitalize (word)
@@ -263,13 +298,21 @@ function u.get_place_name (word)
     return a["CLASS"] == "paikannimi" or a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
   end
   local w = cleanup (word)
-  local s = find_baseform (w, place_name_index, extra_place_name, f)
+  local list = split (w, "%S+")
+
+  local s = find_baseform (list[#list], place_name_index, extra_place_name, f)
 
   if s ~= nil then
-    logfile:write ("get_place_name b " .. w .. " " .. s .. "\n")
-    local u = utf8.gsub (s, "(%a+)", capitalize)
-    logfile:write ("get_place_name c " .. w .. " " .. u .. "\n")
-    return u
+    if #list > 1 then
+      local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], s)
+      logfile:write ("get_place_name b " .. w .. " " .. u .. "\n")
+      return u
+    else
+      logfile:write ("get_place_name c " .. w .. " " .. list[#list] .. "\n")
+      local u = utf8.gsub (s, "(%a+)", capitalize)
+      logfile:write ("get_place_name d " .. w .. " " .. u .. "\n")
+      return u
+    end
   end
 
   return s
@@ -289,37 +332,6 @@ local function decolon (s)
   else
     return utf8.sub (s, 1, n-1)
   end
-end
-
-
--- Palautaan 'u':n ja 'v':n yhteinen alkuosa.
--- Esim. ('abcd" 'abcxyx') -> abc
---
-local function common_prefix_index (u, v)
-  local last = math.min (#u, #v)
-  for i = 1, last do
-    if utf8.ncasecmp (utf8.sub(u,i,i), utf8.sub(v,i,i)) ~= 0 then
-      return i-1
-    end
-  end
-  return last
-end
-
-
-local function beautify (s, t)
-  if s == nil or t == nil then
-    error ("beautify: s == nil or t ==  nil")
-  end
-  local n = common_prefix_index (s, t)
-  if n == 0 then
-    return ""
-  end
-  local x = utf8.sub (s, 1, n)
-  local y = utf8.sub (t, n+1)
-  local z = x .. y
-  assert (z ~= nil)
---  --logfile:write ("beautify " .. s .. " " .. t .. "\n")
-  return z
 end
 
 
