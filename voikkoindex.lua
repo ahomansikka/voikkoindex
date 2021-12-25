@@ -497,16 +497,12 @@ end
 
 
 local function get_bf (word, format)
-  local function fun1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana" end
-
   if format == "=" then
-    -- Jos sanaa ei formatoida, sitä ei tarvitse muuttaa perusmuotoon.
-    --
+    -- Jos sanaa ei formatoida, sitä ei muuteta perusmuotoonkaan.
     return word
   elseif utf8.sub (format, 1, 1) == "p" then
     return u.get_place_name (word)
   else
---    local p = get_indexed_word_f (word, extra_word, fun1)
     local p = get_bf_value (word, extra_word, utf8.sub(format,#format))
 --logfile:write ("get_bf A " .. p .. " " .. format .. " " .. #format .. " " .. utf8.sub(format,#format) .. "\n")
     if p == nil then
@@ -523,7 +519,7 @@ end
 function u.print_formatted (word, format, after, n)
   logfile:write ("print_formatted A [" .. word .. "] [" .. format .. "] [" .. after .. "] [" .. n .. "]\n")
   local uu = cleanup (word)
-  local wo = split (uu,  "([%a-]+)")
+  local wo = split (uu,  "(%S+)")
   local fo = split (format, "([^,]+)")
   if n > 0 and n ~= #wo then
     error ("Parametrissa 'word' pitää olla " .. n .. " sanaa. On " .. #wo .. " sanaa.")
