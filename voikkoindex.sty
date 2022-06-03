@@ -63,57 +63,57 @@
 
 
 \NewDocumentCommand{\SetSurnameIndex}{m m}{%
-  \luadirect{voikkoindex.set_surname_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+  \luadirect{voikkoindex.set_surname_index (\luastringN{#1}, \luastringN{#2})}%
 }
 
 \NewDocumentCommand{\SetPlaceNameIndex}{m m}{%
-  \luadirect{voikkoindex.set_place_name_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+  \luadirect{voikkoindex.set_place_name_index (\luastringN{#1}, \luastringN{#2})}%
 }
 
 \NewDocumentCommand{\SetWordIndex}{m m}{%
-  \luadirect{voikkoindex.set_word_index ("\luaescapestring{#1}", "\luaescapestring{#2}")}%
+  \luadirect{voikkoindex.set_word_index (\luastringN{#1}, \luastringN{#2})}%
 }
 
 
 \NewDocumentCommand{\VXN}{m m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_surname("\luaescapestring{#2}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_surname(\luastringN{#2})}}%
    \IfValueTF{#3}{#1 #2#3\sindex[nimet]{\LuaText, #1}}{#1 #2\sindex[nimet]{\LuaText, #1}}}%
 }
 
 
 \NewDocumentCommand{\VXP}{m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_place_name("\luaescapestring{#1}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_place_name(\luastringN{#1})}}%
    \IfValueTF{#2}{#1#2\sindex[paikat]{\LuaText}}{#1\sindex[paikat]{\LuaText}}}%
 }
 
 
 \NewDocumentCommand{\VXS}{m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word("\luaescapestring{#1}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word(\luastringN{#1})}}%
    \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
 }
 
 \NewDocumentCommand{\VXA}{m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_lowercase("\luaescapestring{#1}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_lowercase(\luastringN{#1})}}%
    \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
 }
 
 \NewDocumentCommand{\VXI}{m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_capitalize("\luaescapestring{#1}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_capitalize(\luastringN{#1})}}%
    \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
 }
 
 
 \NewDocumentCommand{\VXL}{m o}{%
- \luadirect{voikkoindex.print_formatted(\luastringN{#1}, "\luaescapestring{p=,s}", "\luaescapestring{#2}", 2)}%
+ \luadirect{voikkoindex.print_formatted(\luastringN{#1}, \luastringN{p=,s}, \luastringN{#2}, 2)}%
 }
 
 \NewDocumentCommand{\VXF}{m m o}{%
-  \luadirect{voikkoindex.print_formatted(\luastringN{#1}, "\luaescapestring{#2}", "\luaescapestring{#3}", 0)}%
+  \luadirect{voikkoindex.print_formatted(\luastringN{#1}, \luastringN{#2}, \luastringN{#3}, 0)}%
 }
 
 
 \NewDocumentCommand{\VXY}{m o}{%
-  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_uppercase("\luaescapestring{#1}")}}%
+  {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_uppercase(\luastringN{#1})}}%
    \IfValueTF{#2}{#1#2\sindex[sanat]{\LuaText}}{#1\sindex[sanat]{\LuaText}}}%
 }
 
@@ -131,8 +131,8 @@
 %%
 \NewDocumentCommand{\VXVON}{m m m o}{%
   \IfValueTF{#4}%
-    {#1 #2 #3#4\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname("\luaescapestring{#3}")}}}%
-    {#1 #2 #3\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname("\luaescapestring{#3}")}}}%
+    {#1 #2 #3#4\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname(\luastringN{#3})}}}%
+    {#1 #2 #3\vxvon{#1}{#2}{\luadirect{voikkoindex.print_surname(\luastringN{#3})}}}%
 }
 
 
