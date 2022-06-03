@@ -1,4 +1,4 @@
--- Copyright (©) 2021 Hannu Väisänen
+-- Copyright (©) 2021-2022 Hannu Väisänen
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 
 if not modules then modules = { } end modules ['voikkoindex'] = {
-    version   = 0.1,
+    version   = 0.2,
     comment   = "Käytetään Voikkoa muuttamaan indeksoitavat sanat perusmuotoon.",
     author    = "Hannu Väisänen",
     copyright = "Hannu Väisänen",
@@ -118,7 +118,7 @@ local function find_index (word, data)
 
 --logfile:write ("find_index a " .. word .. "\n")
 
- for k, v in ipairs (data) do
+  for k, v in ipairs (data) do
 
 --logfile:write ("find_index b " .. word .. " " .. k .. "\n")
 
@@ -145,6 +145,7 @@ local function cleanup (s)
   t = utf8.gsub (t, "\n", " ")
   t = utf8.gsub (t, "\\emph{", "")
   t = utf8.gsub (t, "[,.]}", "")
+  t = utf8.gsub (t, "{", "")
   t = utf8.gsub (t, "}", "")
   return t
 end
@@ -180,6 +181,7 @@ local function find_baseform (word, index, extra_word, f)
         logfile:write ("find_baseform c " .. result .. "\n")
         return result
       else
+        logfile:write ("find_baseform d " .. b1 .. "\n")
         return b1
       end
     end
@@ -220,6 +222,7 @@ end
 function u.init_voikkoindex (langcode, path, logf)
   Voikko.init (langcode, path)
   logfile = io.open (logf, "w")
+  logfile:write ("init_voikkoindex " .. langcode .. "\n")
 end
 
 
@@ -239,21 +242,21 @@ end
 
 
 local function get_strict_result (word, result)
-  for i = 1, #result do logfile:write (result[i] .. "\n") end
+  for i = 1, #result do logfile:write ("get_strict_result1 " .. result[i] .. "\n") end
 
   if #result == 0 then
-    logfile:write (word .. ": ei perusmuotoa A.\n")
+--    logfile:write ("get_strict_result2 " .. word .. ": ei perusmuotoa A.\n")
     return nil
   elseif #result > 1 then
     if all_same (result) then
-      logfile:write (word .. ": perusmuoto: " .. result[1] .. " B.\n")
+--      logfile:write ("get_strict_result3 " .. word .. ": perusmuoto: " .. result[1] .. " B.\n")
       return result[1]
     else
-      logfile:write (word .. ": useampi kuin yksi perusmuoto C.\n")
+--      logfile:write ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
       return nil
     end
   else
-    logfile:write (word .. ": perusmuoto: " .. result[1] .. ".\n")
+--    logfile:write ("get_strict_result5 " .. word .. ": perusmuoto: " .. result[1] .. ".\n")
     return result[1]
   end
 end
@@ -283,7 +286,7 @@ function u.get_surname (word)
   logfile:write ("get_surname b " .. w .. "\n")
   local s = find_baseform (w, surname_index, extra_surname, f)
   if s == nil then
-    logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
+     logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
      return nil
   end
   logfile:write ("get_surname c " .. s .. "\n")
@@ -303,14 +306,15 @@ function u.get_place_name (word)
   local s = find_baseform (list[#list], place_name_index, extra_place_name, f)
 
   if s ~= nil then
+    logfile:write ("get_place_name b " .. w .. " " .. s .. "\n")
     if #list > 1 then
       local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], s)
-      logfile:write ("get_place_name b " .. w .. " " .. u .. "\n")
+      logfile:write ("get_place_name c " .. w .. " " .. u .. "\n")
       return u
     else
-      logfile:write ("get_place_name c " .. w .. " " .. list[#list] .. "\n")
+      logfile:write ("get_place_name d " .. w .. " " .. list[#list] .. "\n")
       local u = utf8.gsub (s, "(%a+)", capitalize)
-      logfile:write ("get_place_name d " .. w .. " " .. u .. "\n")
+      logfile:write ("get_place_name e " .. w .. " " .. u .. "\n")
       return u
     end
   end
@@ -343,8 +347,6 @@ local function get_indexed_word_f (word, extra_word, classf)
   --logfile:write ("get_indexed_word b [" .. w .. "]\n")
 
   local list = split (w, "%S+")
-
-  --logfile:write ("get_indexed_word c [" .. w .. "]\n")
 
   logfile:write ("get_indexed_word c [" .. list[#list] .. "]\n")
 
@@ -407,8 +409,10 @@ end
 
 
 function u.print_place_name (word)
+--  logfile:write ("print_place_name1 " .. word .. "\n")
   local baseform = u.get_place_name (word)
   if baseform ~= nil then
+--    logfile:write ("print_place_name2 " .. baseform .. "\n")
     tex.sprint (baseform)
   else
     error (word .. ": ei perusmuotoa.")

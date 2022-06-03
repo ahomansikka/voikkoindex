@@ -1,4 +1,4 @@
-%% Copyright (©) 2021 Hannu Väisänen
+%% Copyright (©) 2021-2022 Hannu Väisänen
 %%
 %% This program is free software: you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{voikkoindex}[2021-03-30 versio 0.1.]
+\ProvidesPackage{voikkoindex}[2022-06-03 versio 0.2.]
 
 
 \RequirePackage{luacode}
@@ -104,11 +104,11 @@
 
 
 \NewDocumentCommand{\VXL}{m o}{%
-  \luadirect{voikkoindex.print_formatted("\luaescapestring{#1}", "\luaescapestring{p=,s}", "\luaescapestring{#2}", 2)}%
+ \luadirect{voikkoindex.print_formatted(\luastringN{#1}, "\luaescapestring{p=,s}", "\luaescapestring{#2}", 2)}%
 }
 
 \NewDocumentCommand{\VXF}{m m o}{%
-  \luadirect{voikkoindex.print_formatted("\luaescapestring{#1}", "\luaescapestring{#2}", "\luaescapestring{#3}", 0)}%
+  \luadirect{voikkoindex.print_formatted(\luastringN{#1}, "\luaescapestring{#2}", "\luaescapestring{#3}", 0)}%
 }
 
 
