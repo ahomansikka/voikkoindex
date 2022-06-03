@@ -122,9 +122,12 @@ local function find_index (word, data)
 
 --logfile:write ("find_index b " .. word .. " " .. k .. "\n")
 
-    local first, last = utf8.find (word, v[1], 1, true)
+    local ww = utf8.lower (word)
+    local vv = utf8.lower (v[1]);
+    local first, last = utf8.find (ww, vv, 1, true)
+
 --if first ~= nil then logfile:write ("find_index c " .. word .. " " .. first .. " " .. last .. " " .. utf8.len(word) .. " " .. v[1] .. " " .. v[2] .. "\n") end
-    if (first ~= nil) and (last == utf8.len(word)) then
+    if (first ~= nil) and (last == utf8.len(ww)) then
 --logfile:write ("find_index d " .. word .. " " .. v[2] .. "\n")
       return v[2]
     end
