@@ -51,8 +51,8 @@ local place_name_index_count = {[1] = 1}
 local word_index_count = {[1] = 1}
 
 
--- Palautaan 'u':n ja 'v':n yhteisen alkuosan indeksi.
--- Esim. ('abcd" 'abcxyx') -> 3
+-- Palautetaan 'u':n ja 'v':n yhteisen alkuosan indeksi.
+-- Esim. ('abcd" 'abcdef') -> 3
 --
 local function common_prefix_index (u, v)
   local last = math.min (#u, #v)
@@ -67,6 +67,10 @@ end
 
 
 -- Tehdään sanasta nätimpi. (-:
+-- s: alkuperäinen sana.
+-- t: perusmuoto
+-- Palautetaan sana, jonka alkuosa on s:n ja t:n
+-- yhteinen alkuosa ja loppu t:n loppuosa.
 --
 local function beautify (s, t)
   if s == nil or t == nil then
@@ -93,6 +97,10 @@ local function capitalize (word)
 end
 
 
+-- Etsitään sanan 'word' alkuosa taulukosta 'data'
+-- ja palautetaan koko sana.
+-- Jos ei löydy, palautetaan nil.
+--
 local function find_extra_word (word, data)
   if data == nil then return nil end
 
@@ -139,12 +147,12 @@ end
 
 local function cleanup (s)
   logfile:write ("cleanup1 [" .. s .. "]\n")
-  local t = utf8.gsub (s, "[\\][-]", "")
-  t = utf8.gsub (t, "\"", "")
-  t = utf8.gsub (t, "\n", " ")
-  t = utf8.gsub (t, "\\emph%s*{", "")
-  t = utf8.gsub (t, "[,.]}", "")
-  t = utf8.gsub (t, "[{}]", "")
+  local t = utf8.gsub (s, "[\\][-]", "")    -- Poistetaan ehdollinen ta\-vu\-tus.
+  t = utf8.gsub (t, "\"", "")               -- Poistetaan tavutusohje esim. linja"-autosta => linja-autosta.
+  t = utf8.gsub (t, "\n", " ")              -- Muutetaan rivinvaihto tyhjeeksi.
+  t = utf8.gsub (t, "\\emph%s*{", "")       -- Esim. "\emph{Virtanen}" => "Virtanen}" tai "\emph{Virtanen.}" => "Virtanen.}"
+  t = utf8.gsub (t, "[.,]}", "")            -- Poistetaan \emph{}:n lopusta jäljelle jääneet merkkijonot ".}" tai ",}".
+  t = utf8.gsub (t, "[{}]", "")             -- Poistetaan mahdollisesti jäljelle jääneet { ja }.
   return t
 end
 
@@ -544,7 +552,7 @@ function u.print_formatted (word, format, after, n)
     end
 --logfile:write ("print formatted 2 " .. word .. " " .. format .. " " .. g .. "\n")
     if utf8.sub (f, 1, 1) == "p" then
-     table.insert (text, w .. "\\vxp{" .. baseform .. "}")
+      table.insert (text, w .. "\\vxp{" .. baseform .. "}")
     else
       table.insert (text, w)
     end
