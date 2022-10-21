@@ -265,6 +265,77 @@ Tämäkin toimii
     \SetExtraSurname{Wirta|nen}
     \SetSurnameIndex{Wirtanen}{Virtanen}
 
+voikkoindex-mode.el
+-------------------
+
+Emacsin paketti `voikkoindex-mode.el` määrittelee komennoille
+näppäinyhdistelmät
+
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ESC M-n</td>
+<td style="text-align: left;">VXN</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC M-p</td>
+<td style="text-align: left;">VXP</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC M-s</td>
+<td style="text-align: left;">VXS</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC M-a</td>
+<td style="text-align: left;">VXA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC M-i</td>
+<td style="text-align: left;">VXI</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC M-y</td>
+<td style="text-align: left;">VXY</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC M-l</td>
+<td style="text-align: left;">VXL</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ESC M-f</td>
+<td style="text-align: left;">VXF</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ESC M-v</td>
+<td style="text-align: left;">VXVON</td>
+</tr>
+</tbody>
+</table>
+
+Paketti asennetaan Linuxissa kopioimalla tiedosto `voikkoindex-mode.el`
+hakemistoon, josta emacs löytää sen ja lisäämällä tiedostoon `.emacs`
+
+    (autoload 'voikkoindex-mode "voikkoindex-mode"
+        "Toggle voikkoindex-mode." t)
+
+Moodi otetaan käyttöön ja poistetaan käytöstä komennolla
+
+`M-x voikkoindex-mode`
+
+Näppäinkomennot toimivat siirtämällä kohdistin sanaan, joka halutaan
+lisätä hakemistoon ja antamalla jokin näppäinkomento. Esimerkiksi `M-s`
+muuttaa sanan `esimeriksi` muotoon `\VXS{esimerkiksi}` ja niin edelleen.
+
+`VXN` ja `VXL` lisäävät indeksiin kaksi sanaa ja `VXVON` kolme sanaa.
+Tällöin kohdistin täytyy laittaa ensimmäisen sanan päälle.
+
+Mikäli (viimeisen) sanan lopussa on piste tai pilkku, ne muutetaan
+muotoon `[.]` tai `[,]`
+
+Komennolla `VXF` voidaan hakemistoon laittaa kuinka monta sanaa tahansa.
+Niinpä `M-f` vain lisää ensimmäisen sanan (jonka päällä kohdistin on)
+alkuun `\VXF{` eikä tee mitään muuta.
+
 Mitä tarvitaan ja mistä ne saa?
 -------------------------------
 

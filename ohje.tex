@@ -361,6 +361,55 @@ Tämäkin toimii
 \end{verbatim}
 
 
+\newpage
+\subsection*{voikkoindex-mode.el}
+
+Emacsin paketti \verb=voikkoindex-mode.el= määrittelee komennoille
+näppäinyhdistelmät
+
+\begin{tabular}{@{}ll}
+ESC M-n & VXN \\
+ESC M-p & VXP \\
+ESC M-s & VXS \\
+ESC M-a & VXA \\
+ESC M-i & VXI \\
+ESC M-y & VXY \\
+ESC M-l & VXL \\
+ESC M-f & VXF \\
+ESC M-v & VXVON
+\end{tabular}
+
+Paketti asennetaan Linuxissa kopioimalla tiedosto
+\verb=voikkoindex-mode.el= hakemistoon, josta emacs löytää sen ja
+lisäämällä tiedostoon \verb=.emacs=
+
+\begin{verbatim}
+(autoload 'voikkoindex-mode "voikkoindex-mode"
+    "Toggle voikkoindex-mode." t)
+\end{verbatim}
+
+Moodi otetaan käyttöön ja poistetaan käytöstä komennolla
+
+\verb=M-x voikkoindex-mode=
+
+Näppäinkomennot toimivat siirtämällä kohdistin sanaan, joka halutaan
+lisätä hakemistoon ja antamalla jokin näppäinkomento. Esimerkiksi
+\verb=M-s= muuttaa sanan \verb=esimeriksi= muotoon
+\verb=\VXS{esimerkiksi}= ja niin edelleen.
+
+\verb=VXN= ja \verb=VXL= lisäävät indeksiin kaksi sanaa ja
+\verb=VXVON= kolme sanaa. Tällöin kohdistin täytyy laittaa ensimmäisen
+sanan päälle.
+
+Mikäli (viimeisen) sanan lopussa on piste tai pilkku, ne muutetaan muotoon
+\verb=[.]= tai \verb=[,]=
+
+Komennolla \verb=VXF= voidaan hakemistoon laittaa kuinka monta sanaa
+tahansa. Niinpä \verb=M-f= vain lisää ensimmäisen sanan (jonka päällä
+kohdistin on) alkuun \verb=\VXF{= eikä tee mitään muuta.
+
+
+\newpage
 \subsection*{Mitä tarvitaan ja mistä ne saa?}
 
 \begin{itemize}
