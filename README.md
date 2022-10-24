@@ -309,8 +309,18 @@ näppäinyhdistelmät
 <td style="text-align: left;">ESC M-v</td>
 <td style="text-align: left;">VXVON</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;">ESC M-e</td>
+<td style="text-align: left;">(*)</td>
+</tr>
 </tbody>
 </table>
+
+(\*) `ESC M-e` toimii kuten `ESC M-n`, mutta lisää komennon `\emph{}`
+sukunimen ympärille, ja jos sukunimen jäljessä on piste tai pilkku,
+laittaa sen `\emph{}`:n sisään. Esimerkiksi
+
+`Matti Virtasesta,` tulee `\VXN{Matti}{\emph{Virtasesta,}}`
 
 Paketti asennetaan Linuxissa kopioimalla tiedosto `voikkoindex-mode.el`
 hakemistoon, josta emacs löytää sen ja lisäämällä tiedostoon `.emacs`

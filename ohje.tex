@@ -376,8 +376,15 @@ ESC M-i & VXI \\
 ESC M-y & VXY \\
 ESC M-l & VXL \\
 ESC M-f & VXF \\
-ESC M-v & VXVON
+ESC M-v & VXVON \\
+ESC M-e & (*)
 \end{tabular}
+
+(*) \verb=ESC M-e= toimii kuten \verb=ESC M-n=, mutta lisää komennon
+\verb=\emph{}= sukunimen ympärille, ja jos sukunimen jäljessä on piste
+tai pilkku, laittaa sen \verb=\emph{}=:n sisään. Esimerkiksi
+
+\verb=Matti Virtasesta,= tulee \verb=\VXN{Matti}{\emph{Virtasesta,}}=
 
 Paketti asennetaan Linuxissa kopioimalla tiedosto
 \verb=voikkoindex-mode.el= hakemistoon, josta emacs löytää sen ja
