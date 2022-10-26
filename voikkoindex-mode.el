@@ -56,8 +56,8 @@
 
 
 ;;; Lisätään (viimeisen) sanan jälkeen "}" tai,
-;;; jos sanan jälkeen tulee "." tai ",",
-;;; poistetaan välimerkki ja lisätään "}[.]" tai "}[,]".
+;;; jos sanan jälkeen tulee "." tai "," tai ":",
+;;; poistetaan välimerkki ja lisätään "}[.]" tai "}[,]" tai "}[:]".
 ;;;
 (defun voikkoindex--end (n)
   (interactive)
@@ -65,6 +65,7 @@
   (insert "}")
   (cond ((= (following-char) ?.) (goto-char (point)) (delete-char 1) (insert "[.]"))
         ((= (following-char) ?,) (goto-char (point)) (delete-char 1) (insert "[,]"))
+        ((= (following-char) ?:) (goto-char (point)) (delete-char 1) (insert "[:]"))
   )
 )
 
@@ -125,6 +126,7 @@
 ;;; Johannes Angelokselle  => \VXN{Johannes}{\emph{Angelokselle}}
 ;;; Johannes Angelokselle. => \VXN{Johannes}{\emph{Angelokselle.}}
 ;;; Johannes Angelokselle, => \VXN{Johannes}{\emph{Angelokselle,}}
+;;; Johannes Angelokselle: => \VXN{Johannes}{\emph{Angelokselle:}}
 ;;;
 (defun voikkoindex--emph()
   (interactive)
@@ -133,7 +135,7 @@
   (re-search-forward " +")
   (replace-match "}{\\\\emph{")
   (right-word 1)
-  (if (looking-at "[.,]") (forward-char))
+  (if (looking-at "[.,:]") (forward-char))
   (insert "}}")
 )
 

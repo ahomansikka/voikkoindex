@@ -317,8 +317,8 @@ näppäinyhdistelmät
 </table>
 
 (\*) `ESC M-e` toimii kuten `ESC M-n`, mutta lisää komennon `\emph{}`
-sukunimen ympärille, ja jos sukunimen jäljessä on piste tai pilkku,
-laittaa sen `\emph{}`:n sisään. Esimerkiksi
+sukunimen ympärille, ja jos sukunimen jäljessä on piste tai pilkku tai
+kaksoispiste, laittaa sen `\emph{}`:n sisään. Esimerkiksi
 
 `Matti Virtasesta,` tulee `\VXN{Matti}{\emph{Virtasesta,}}`
 
@@ -339,8 +339,8 @@ muuttaa sanan `esimeriksi` muotoon `\VXS{esimerkiksi}` ja niin edelleen.
 `VXN` ja `VXL` lisäävät indeksiin kaksi sanaa ja `VXVON` kolme sanaa.
 Tällöin kohdistin täytyy laittaa ensimmäisen sanan päälle.
 
-Mikäli (viimeisen) sanan lopussa on piste tai pilkku, ne muutetaan
-muotoon `[.]` tai `[,]`
+Mikäli (viimeisen) sanan lopussa on piste tai pilkku tai kaksoispiste,
+se laitetaan hakasulkujen sisään, esimerkiksi `[.]`
 
 Komennolla `VXF` voidaan hakemistoon laittaa kuinka monta sanaa tahansa.
 Niinpä `M-f` vain lisää ensimmäisen sanan (jonka päällä kohdistin on)

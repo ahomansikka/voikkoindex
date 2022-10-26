@@ -382,7 +382,8 @@ ESC M-e & (*)
 
 (*) \verb=ESC M-e= toimii kuten \verb=ESC M-n=, mutta lisää komennon
 \verb=\emph{}= sukunimen ympärille, ja jos sukunimen jäljessä on piste
-tai pilkku, laittaa sen \verb=\emph{}=:n sisään. Esimerkiksi
+tai pilkku tai kaksoispiste, laittaa sen \verb=\emph{}=:n sisään.
+Esimerkiksi
 
 \verb=Matti Virtasesta,= tulee \verb=\VXN{Matti}{\emph{Virtasesta,}}=
 
@@ -408,8 +409,8 @@ lisätä hakemistoon ja antamalla jokin näppäinkomento. Esimerkiksi
 \verb=VXVON= kolme sanaa. Tällöin kohdistin täytyy laittaa ensimmäisen
 sanan päälle.
 
-Mikäli (viimeisen) sanan lopussa on piste tai pilkku, ne muutetaan muotoon
-\verb=[.]= tai \verb=[,]=
+Mikäli (viimeisen) sanan lopussa on piste tai pilkku tai kaksoispiste,
+se laitetaan hakasulkujen sisään, esimerkiksi \verb=[.]=
 
 Komennolla \verb=VXF= voidaan hakemistoon laittaa kuinka monta sanaa
 tahansa. Niinpä \verb=M-f= vain lisää ensimmäisen sanan (jonka päällä
