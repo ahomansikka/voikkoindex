@@ -1,6 +1,6 @@
 ;;; voikkoindex-mode.el --- Emacs-liittymä voikkoindex.sty -pakettiin.
 
-;; Copyright (C) 2022 Hannu Väisänen
+;; Copyright (C) 2022-2023 Hannu Väisänen
 
 
 ;; Author: Hannu Väisänen
@@ -56,8 +56,9 @@
 
 
 ;;; Lisätään (viimeisen) sanan jälkeen "}" tai,
-;;; jos sanan jälkeen tulee "." tai "," tai ":",
-;;; poistetaan välimerkki ja lisätään "}[.]" tai "}[,]" tai "}[:]".
+;;; jos sanan jälkeen tulee jokin merkeistä .;:;
+;;; poistetaan välimerkki ja lisätään "}[.]" tai
+;;; samalla tavalla muu välimerkki.
 ;;;
 (defun voikkoindex--end (n)
   (interactive)
@@ -66,6 +67,7 @@
   (cond ((= (following-char) ?.) (goto-char (point)) (delete-char 1) (insert "[.]"))
         ((= (following-char) ?,) (goto-char (point)) (delete-char 1) (insert "[,]"))
         ((= (following-char) ?:) (goto-char (point)) (delete-char 1) (insert "[:]"))
+        ((= (following-char) ?;) (goto-char (point)) (delete-char 1) (insert "[;]"))
   )
 )
 
@@ -135,7 +137,7 @@
   (re-search-forward " +")
   (replace-match "}{\\\\emph{")
   (right-word 1)
-  (if (looking-at "[.,:]") (forward-char))
+  (if (looking-at "[.,:;]") (forward-char))
   (insert "}}")
 )
 

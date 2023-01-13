@@ -1,4 +1,4 @@
--- Copyright (©) 2021-2022 Hannu Väisänen
+-- Copyright (©) 2021-2023 Hannu Väisänen
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -259,6 +259,7 @@ local function get_strict_result (word, result)
       return result[1]
     else
 --      logfile:write ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
+      error ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
       return nil
     end
   else
@@ -573,8 +574,10 @@ function u.print_formatted (word, format, after, n)
 --  end
   if after == "-NoValue-" then
     tex.sprint (orig .. "\\sindex[sanat]{" .. result .. "}")
+--    logfile:write ("print_formatted F " .. orig .. "\\sindex[sanat]{" .. result .. "}\n")
   else
     tex.sprint (orig .. after .. "\\sindex[sanat]{" .. result .. "}")
+--    logfile:write ("print_formatted G " .. orig .. after .. "\\sindex[sanat]{" .. result .. "}\n")
   end
 end
 
