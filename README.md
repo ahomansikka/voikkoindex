@@ -74,6 +74,7 @@ Voikkoindex määrittelee 17 komentoa
     \NewDocumentCommand{\VXY}{m o}
     \NewDocumentCommand{\VXL}{m o}
     \NewDocumentCommand{\VXF}{m m o}
+    \NewDocumentCommand{\VXX}{m m m o}
 
     \NewDocumentCommand{\SetExtraSurname}{m}
     \NewDocumentCommand{\SetExtraPlaceName}{m}
@@ -219,6 +220,17 @@ mutta &lt;lista&gt;ssa voi olla vain kaksi sanaa. Esimerkiksi
     \VXL{Helsingin nuorisoseuralle}[.] =>
     Helsingin\vxp{Helsinki} nuorisoseuralle.\vxs{Helsingin nuorisoseura}
 
+    \VXX{<sanat>}{<formaatti>}{<lisäys>}[<välimerkki>]
+
+Tämä toimii samoin kuin `VXF`, mutta `<lisäys>` lisätään indeksiin muun
+tekstin jälkeen. Esimerkiksi
+
+    \VXX{Helsingin uudelle nuorisoseuralle}{p=,s,s}{1900} =>
+      Helsingin\vxp{Helsinki} uusi
+      nuorisoseura\vxs{Helsingin uusi nuorisoseura 1900}
+
+Lisäys voi tietenkin olla muuta kuin vuosiluku.
+
 Yksikkö ja monikko
 ------------------
 
@@ -264,6 +276,15 @@ Tämäkin toimii
 
     \SetExtraSurname{Wirta|nen}
     \SetSurnameIndex{Wirtanen}{Virtanen}
+
+Myös sellaiset erisnimet pitää lisätä, joitten perusmuoto on sama kuin
+jonkun muun sanan taivutusmuoto, tai jos niitten taivutusmuodolla on
+useampi kuin yksi perusmuoto. Esimerkiksi Koski (koskea), Kemien (Kemi,
+Kemie).
+
+Voikkoindex hyväksyy erisnimien perusmuodoiksi kaikki ne merkkijonot,
+joille se löytää perusmuodon, vaikka perusmuoto ei olisi sanastossa
+erisnimenä.
 
 voikkoindex-mode.el
 -------------------

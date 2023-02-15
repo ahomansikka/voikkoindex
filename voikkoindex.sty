@@ -111,6 +111,10 @@
   \luadirect{voikkoindex.print_formatted(\luastringN{#1}, \luastringN{#2}, \luastringN{#3}, 0)}%
 }
 
+\NewDocumentCommand{\VXX}{m m m o}{%
+  \luadirect{voikkoindex.print_x(\luastringN{#1}, \luastringN{#2}, \luastringN{#3}, \luastringN{#4})}%
+}
+
 
 \NewDocumentCommand{\VXY}{m o}{%
   {\newcommand{\LuaText}{\luadirect{voikkoindex.print_word_uppercase(\luastringN{#1})}}%

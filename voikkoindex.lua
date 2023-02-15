@@ -104,19 +104,19 @@ end
 local function find_extra_word (word, data)
   if data == nil then return nil end
 
---  logfile:write ("find_extra_word a " .. word .. "\n")
+  --logfile:write ("find_extra_word a " .. word .. "\n")
 
   for k, v in ipairs (data) do
---    logfile:write ("find_extra_word b " .. word .. " " .. k .. " " .. v[1] .. " " .. v[2] .. "\n")
+    --logfile:write ("find_extra_word b " .. word .. " " .. k .. " " .. v[1] .. " " .. v[2] .. "\n")
 
     local first, last = utf8.find (utf8.lower(word), utf8.lower(v[1]), 1, true)
 
     if first ~= nil then
---      logfile:write ("find_extra_word c " .. word .. " " .. v[2] .. " " .. first .. " " .. last .. "\n")
+      --logfile:write ("find_extra_word c " .. word .. " " .. v[2] .. " " .. first .. " " .. last .. "\n")
       return v[2]
     end
   end
---  logfile:write ("find_extra_word d " .. word .. " nil\n")
+  --logfile:write ("find_extra_word d " .. word .. " nil\n")
   return nil
 end
 
@@ -141,6 +141,28 @@ local function find_index (word, data)
     end
   end
 --logfile:write ("find_index e " .. word .. "\n")
+  return nil
+end
+
+
+-- Onko 'word' taulukossa 'extra_word'?
+-- Jos on, palautetaan taulukon sana (perusmuoto), muuten palautetaan nil.
+--
+local function get_extra_word (word, index, extra_word)
+--logfile:write ("get_extra_word a " .. word .. "\n")
+  local w = find_extra_word (word, extra_word)
+
+  if w ~= nil then
+    --logfile:write ("get_extra_word b " .. w .. "\n")
+    local u = find_index (w, index)
+    if u ~= nil then
+      --logfile:write ("get_extra_word c " .. w .. " " .. u .. "\n")
+      return u
+    end
+    --logfile:write ("get_extra_word d " .. w .. "\n")
+    return w
+  end
+  --logfile:write ("get_extra_word e " .. word .. "\n")
   return nil
 end
 
@@ -291,6 +313,12 @@ function u.get_surname (word)
   logfile:write ("get_surname a " .. word .. "\n")
   local w = cleanup (word)
   logfile:write ("get_surname b " .. w .. "\n")
+
+  local p = get_extra_word (w, surname_index, extra_surname)
+  if p ~= nil then
+    return p
+  end
+
   local s = find_baseform (w, surname_index, extra_surname, f)
   if s == nil then
      logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
@@ -309,6 +337,13 @@ function u.get_place_name (word)
   end
   local w = cleanup (word)
   local list = split (w, "%S+")
+
+  if #list == 1 then
+    local p = get_extra_word (list[#list], place_name_index, extra_place_name)
+    if p ~= nil then
+      return p
+    end
+  end
 
   local s = find_baseform (list[#list], place_name_index, extra_place_name, f)
 
@@ -527,7 +562,7 @@ local function get_bf (word, format)
 end
 
 
-function u.print_formatted (word, format, after, n)
+local function xprint_formatted (word, format, after, n)
   logfile:write ("print_formatted A [" .. word .. "] [" .. format .. "] [" .. after .. "] [" .. n .. "]\n")
   local uu = cleanup (word)
   local wo = split (uu,  "(%S+)")
@@ -573,12 +608,29 @@ function u.print_formatted (word, format, after, n)
 --    logfile:write ("print_formatted E " .. list[i] .."\n")
 --  end
   if after == "-NoValue-" then
-    tex.sprint (orig .. "\\sindex[sanat]{" .. result .. "}")
 --    logfile:write ("print_formatted F " .. orig .. "\\sindex[sanat]{" .. result .. "}\n")
+--    tex.sprint (orig .. "\\sindex[sanat]{" .. result .. "}")
+    return (orig .. "\\sindex[sanat]{" .. result .. "}")
   else
-    tex.sprint (orig .. after .. "\\sindex[sanat]{" .. result .. "}")
 --    logfile:write ("print_formatted G " .. orig .. after .. "\\sindex[sanat]{" .. result .. "}\n")
+--    tex.sprint (orig .. after .. "\\sindex[sanat]{" .. result .. "}")
+    return (orig .. after .. "\\sindex[sanat]{" .. result .. "}")
   end
+end
+
+
+function u.print_formatted (word, format, after, n)
+  tex.sprint (xprint_formatted (word, format, after, n))
+end
+
+
+function u.print_x (word, format, noword, after)
+--  logfile:write ("print_x A [" .. word .. "] [" .. format .. "] [" .. noword .. "] [" .. after .. "]\n")
+  local s = xprint_formatted (word, format, after, 0)
+--  logfile:write ("print_x B §" .. s .. "§\n")
+  s = utf8.gsub (s, "}$", " " .. noword .. "}") 
+--  logfile:write ("print_x C §" .. s .. "§\n")
+  tex.sprint (s)
 end
 
 ----------------------------------------------------------------------
@@ -603,6 +655,7 @@ function u.set_extra_surname (surname)
 end
 
 function u.set_extra_place_name (place_name)
+--  logfile:write ("u.set_extra_place_name\n")
   set_extra (place_name, extra_place_name, extra_place_name_count)
 end
 
