@@ -308,7 +308,7 @@ end
 
 function u.get_surname (word)
   function f(a)
-    return a["CLASS"] == "sukunimi"
+    return a["CLASS"] == "sukunimi" or a["CLASS"] == "nimisana"
   end
   logfile:write ("get_surname a " .. word .. "\n")
   local w = cleanup (word)
