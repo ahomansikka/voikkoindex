@@ -197,7 +197,7 @@ end
 
 -- Oletetaan, että funktiota cleanup(word) on kutsuttu ennen tämän funktion kutsumista.
 --
-local function find_baseform (word, index, extra_word, f)
+local function find_baseform (word, index, extra_word, f, g)
   logfile:write ("find_baseform a " .. word .. "\n")
 
   if f ~= nil then
@@ -215,18 +215,6 @@ local function find_baseform (word, index, extra_word, f)
     end
   end
 
-  local b2 = u.get_baseform (word)
-  if b2 ~= nil then
-    logfile:write ("find_baseform d " .. b2 .. "\n")
-    local result = find_index (b2, index)
-    if result ~= nil then
-      logfile:write ("find_baseform e " .. result .. "\n")
-      return result
-    else
-      return b2
-    end
-  end
-
   logfile:write ("find_baseform f " .. word .. "\n")
 
   local w = find_extra_word (word, extra_word)
@@ -238,6 +226,15 @@ local function find_baseform (word, index, extra_word, f)
     end
     logfile:write ("find_baseform h " .. w .. "\n")
     return w
+  end
+
+  if g ~= nil then
+     logfile:write ("find_baseform i " .. word .. "\n")
+     local w = find_baseform (word, index, extra_word, g, nil)
+     if w ~= nil then
+       logfile:write ("find_baseform j " .. word .. "\n")
+       return w
+     end
   end
 
   logfile:write ("find_baseform ö " .. word .. ": ei perusmuotoa.\n")
@@ -308,7 +305,10 @@ end
 
 function u.get_surname (word)
   function f(a)
-    return a["CLASS"] == "sukunimi" or a["CLASS"] == "nimisana"
+    return a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi"
+  end
+  function g(a)
+    return a["CLASS"] == "sukunimi" or a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana"
   end
   logfile:write ("get_surname a " .. word .. "\n")
   local w = cleanup (word)
@@ -319,7 +319,7 @@ function u.get_surname (word)
     return p
   end
 
-  local s = find_baseform (w, surname_index, extra_surname, f)
+  local s = find_baseform (w, surname_index, extra_surname, f, g)
   if s == nil then
      logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
      return nil
@@ -335,6 +335,9 @@ function u.get_place_name (word)
   function f(a)
     return a["CLASS"] == "paikannimi" or a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
   end
+  function g(a)
+    return a["CLASS"] == "nimisana"
+  end
   local w = cleanup (word)
   local list = split (w, "%S+")
 
@@ -345,7 +348,7 @@ function u.get_place_name (word)
     end
   end
 
-  local s = find_baseform (list[#list], place_name_index, extra_place_name, f)
+  local s = find_baseform (list[#list], place_name_index, extra_place_name, f, g)
 
   if s ~= nil then
     logfile:write ("get_place_name b " .. w .. " " .. s .. "\n")
@@ -392,7 +395,7 @@ local function get_indexed_word_f (word, extra_word, classf)
 
   logfile:write ("get_indexed_word c [" .. list[#list] .. "]\n")
 
-  local s = find_baseform (list[#list], word_index, extra_word, classf)
+  local s = find_baseform (list[#list], word_index, extra_word, classf, nil)
 
   if s ~= nil then
     logfile:write ("get_indexed_word d [" .. s .. "]\n")
@@ -420,7 +423,8 @@ end
 
 function u.get_indexed_word (word, extra_word)
   local function classf (a)
-    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana"
+    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" or
+           a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" 
   end
   return get_indexed_word_f (word, extra_word, classf)
 end
