@@ -336,7 +336,7 @@ function u.get_place_name (word)
     return a["CLASS"] == "paikannimi" or a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
   end
   function g(a)
-    return a["CLASS"] == "nimisana"
+    return a["CLASS"] == "nimisana" or  a["CLASS"] == "nimi"
   end
   local w = cleanup (word)
   local list = split (w, "%S+")
@@ -424,7 +424,7 @@ end
 function u.get_indexed_word (word, extra_word)
   local function classf (a)
     return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" or
-           a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" 
+           a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" or a["CLASS"] == "lukusana"
   end
   return get_indexed_word_f (word, extra_word, classf)
 end
@@ -532,9 +532,12 @@ end
 
 
 local function get_bf_value (word, extra_word, klass)
-  local function f1(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana" end
+  local function f1(a) return a["CLASS"] == "nimisana"  or a["CLASS"] == "nimisana_laatusana" end
   local function f2(a) return a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" end
-  local function f3(a) return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" end
+  local function f3(a) return a["CLASS"] == "nimisana"  or a["CLASS"] == "laatusana" or
+                              a["CLASS"] == "nimisana_laatusana" or
+                              a["CLASS"] == "lukusana" or
+                              a["CLASS"] == "nimi" end
 
   if klass == "N" then
     return get_indexed_word_f (word, extra_word, f1)
