@@ -387,25 +387,25 @@ end
 -- Muutetaan merkkijono 'word' merkkijonoksi, joka voidaan laittaa hakemistoon.
 --
 local function get_indexed_word_f (word, extra_word, classf)
-  --logfile:write ("get_indexed_word a [" .. word .. "]\n")
+  --logfile:write ("get_indexed_word_f a [" .. word .. "]\n")
   local w = cleanup (word)
-  --logfile:write ("get_indexed_word b [" .. w .. "]\n")
+  --logfile:write ("get_indexed_word_f b [" .. w .. "]\n")
 
   local list = split (w, "%S+")
 
-  logfile:write ("get_indexed_word c [" .. list[#list] .. "]\n")
+  logfile:write ("get_indexed_word_f c [" .. list[#list] .. "]\n")
 
   local s = find_baseform (list[#list], word_index, extra_word, classf, nil)
 
   if s ~= nil then
-    logfile:write ("get_indexed_word d [" .. s .. "]\n")
+    logfile:write ("get_indexed_word_f d [" .. s .. "]\n")
     if #list > 1 then
       local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], s)
-      logfile:write ("get_indexed_word e [" .. u .. "]\n")
+      logfile:write ("get_indexed_word_f e [" .. u .. "]\n")
       return u
     else
       local u =  beautify (list[#list], s)
-      logfile:write ("get_indexed_word f [" .. u .. "]\n")
+      logfile:write ("get_indexed_word_f f [" .. u .. "]\n")
       return u
     end
   end
@@ -417,14 +417,16 @@ local function get_indexed_word_f (word, extra_word, classf)
     end
   end
 
+  logfile:write ("get_indexed_word_f g [" .. word .. "] nil\n")
   return nil
 end
 
 
 function u.get_indexed_word (word, extra_word)
   local function classf (a)
-    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana" or a["CLASS"] == "nimisana_laatusana" or
-           a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" or a["CLASS"] == "lukusana"
+    return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana"  or a["CLASS"] == "nimisana_laatusana" or
+           a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" or a["CLASS"] == "lukusana" or
+           a["CLASS"] == "nimi"     or a["CLASS"] == "lyhenne"
   end
   return get_indexed_word_f (word, extra_word, classf)
 end
@@ -537,7 +539,8 @@ local function get_bf_value (word, extra_word, klass)
   local function f3(a) return a["CLASS"] == "nimisana"  or a["CLASS"] == "laatusana" or
                               a["CLASS"] == "nimisana_laatusana" or
                               a["CLASS"] == "lukusana" or
-                              a["CLASS"] == "nimi" end
+                              a["CLASS"] == "nimi" or
+                              a["CLASS"] == "lyhenne" end
 
   if klass == "N" then
     return get_indexed_word_f (word, extra_word, f1)
