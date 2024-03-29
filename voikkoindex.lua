@@ -305,10 +305,13 @@ end
 
 function u.get_surname (word)
   function f(a)
-    return a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi"
+    return a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" or a["CLASS"] == "etunimi"
   end
   function g(a)
     return a["CLASS"] == "sukunimi" or a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana"
+  end
+  function h(a)
+    return a["CLASS"] == "sukunimi"
   end
   logfile:write ("get_surname a " .. word .. "\n")
   local w = cleanup (word)
@@ -317,6 +320,11 @@ function u.get_surname (word)
   local p = get_extra_word (w, surname_index, extra_surname)
   if p ~= nil then
     return p
+  end
+
+  local x = find_baseform (w, surname_index, extra_surname, h, h)
+  if x ~= nil then
+    return x
   end
 
   local s = find_baseform (w, surname_index, extra_surname, f, g)
