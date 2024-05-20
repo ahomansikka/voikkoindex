@@ -99,6 +99,21 @@
 )
 
 
+;;; Johannes \emph{Angelokselle} => \VXN{Johannes}{\emph{Angelokselle}}
+;;;
+(defun voikkoindex--vxn-emph()
+  (interactive)
+  (voikkoindex--go-to-start-of-word)
+  (insert "\\VXN{")
+  (re-search-forward " +[\\]emph{")
+  (replace-match "}{\\\\emph{")
+  (right-word 1)
+  (if (looking-at "[.,:;]") (forward-char))
+  (forward-char)
+  (insert "}")
+)
+
+
 (defun voikkoindex--vxl()
   (interactive)
   (voikkoindex--go-to-start-of-word)
@@ -159,3 +174,4 @@
 (define-key voikkoindex-mode-map (kbd "ESC M-f") 'voikkoindex--vxf)
 (define-key voikkoindex-mode-map (kbd "ESC M-v") 'voikkoindex--vxvon)
 (define-key voikkoindex-mode-map (kbd "ESC M-e") 'voikkoindex--emph)
+(define-key voikkoindex-mode-map (kbd "ESC M-z") 'voikkoindex--vxn-emph)
