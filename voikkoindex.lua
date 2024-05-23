@@ -197,7 +197,7 @@ end
 
 -- Oletetaan, että funktiota cleanup(word) on kutsuttu ennen tämän funktion kutsumista.
 --
-local function find_baseform (word, index, extra_word, f, g)
+local function find_baseform (word, index, extra_word, f, g, h)
   logfile:write ("find_baseform a " .. word .. "\n")
 
   if f ~= nil then
@@ -230,7 +230,16 @@ local function find_baseform (word, index, extra_word, f, g)
 
   if g ~= nil then
      logfile:write ("find_baseform i " .. word .. "\n")
-     local w = find_baseform (word, index, extra_word, g, nil)
+     local w = find_baseform (word, index, extra_word, g, nil, nil)
+     if w ~= nil then
+       logfile:write ("find_baseform j " .. word .. "\n")
+       return w
+     end
+  end
+
+  if h ~= nil then
+     logfile:write ("find_baseform i " .. word .. "\n")
+     local w = find_baseform (word, index, extra_word, h, nil, nil)
      if w ~= nil then
        logfile:write ("find_baseform j " .. word .. "\n")
        return w
@@ -322,12 +331,12 @@ function u.get_surname (word)
     return p
   end
 
-  local x = find_baseform (w, surname_index, extra_surname, h, h)
+  local x = find_baseform (w, surname_index, extra_surname, h, nil, nil)
   if x ~= nil then
     return x
   end
 
-  local s = find_baseform (w, surname_index, extra_surname, f, g)
+  local s = find_baseform (w, surname_index, extra_surname, f, g, nil)
   if s == nil then
      logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
      return nil
@@ -341,9 +350,12 @@ end
 function u.get_place_name (word)
   logfile:write ("get_place_name a " .. word .. "\n")
   function f(a)
-    return a["CLASS"] == "paikannimi" or a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
+    return a["CLASS"] == "paikannimi"
   end
   function g(a)
+    return a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
+  end
+  function h(a)
     return a["CLASS"] == "nimisana" or  a["CLASS"] == "nimi"
   end
   local w = cleanup (word)
@@ -352,11 +364,17 @@ function u.get_place_name (word)
   if #list == 1 then
     local p = get_extra_word (list[#list], place_name_index, extra_place_name)
     if p ~= nil then
+      logfile:write ("get_place_name x " .. word .. "\n")
       return p
     end
   end
 
-  local s = find_baseform (list[#list], place_name_index, extra_place_name, f, g)
+  logfile:write ("get_place_name y " .. word .. " " .. #list .. "\n")
+  logfile:write ("get_place_name z " .. list[#list] .. "\n")
+
+  local s = find_baseform (list[#list], place_name_index, extra_place_name, f, g, h)
+
+  logfile:write ("get_place_name å " .. list[#list] .. "\n")
 
   if s ~= nil then
     logfile:write ("get_place_name b " .. w .. " " .. s .. "\n")
@@ -403,7 +421,7 @@ local function get_indexed_word_f (word, extra_word, classf)
 
   logfile:write ("get_indexed_word_f c [" .. list[#list] .. "]\n")
 
-  local s = find_baseform (list[#list], word_index, extra_word, classf, nil)
+  local s = find_baseform (list[#list], word_index, extra_word, classf, nil, nil)
 
   if s ~= nil then
     logfile:write ("get_indexed_word_f d [" .. s .. "]\n")
