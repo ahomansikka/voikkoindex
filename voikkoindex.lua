@@ -1,4 +1,4 @@
--- Copyright (©) 2021-2024 Hannu Väisänen
+-- Copyright (©) 2021-2025 Hannu Väisänen
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -113,7 +113,9 @@ local function find_extra_word (word, data)
 
     if first ~= nil then
       --logfile:write ("find_extra_word c " .. word .. " " .. v[2] .. " " .. first .. " " .. last .. "\n")
-      return v[2]
+      if first == 1 then
+        return v[2]
+      end
     end
   end
   --logfile:write ("find_extra_word d " .. word .. " nil\n")
@@ -308,6 +310,7 @@ function u.get_baseform2 (word, f)
   logfile:write ("get_baseform2 " .. word .. "\n")
   local analysis = Voikko.analyse_word (word)
   local result = Voikko.get_analysis_result (analysis, f, "BASEFORM")
+--Voikko.print_table (result)
   return get_strict_result (word, result)
 end
 
