@@ -392,6 +392,10 @@ function u.get_place_name (word)
     else
       logfile:write ("get_place_name d " .. w .. " " .. list[#list] .. "\n")
       local u = utf8.gsub (s, "(%a+)", capitalize)
+      local first, last = utf8.find (u, "Lähi-Itä", 1, true)
+      if first == 1 and last == utf8.len(u) then
+        return "Lähi-itä"  -- Tämä kirjoitetaan pienellä toka i:llä.
+      end
       logfile:write ("get_place_name e " .. w .. " " .. u .. "\n")
       return u
     end
