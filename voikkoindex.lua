@@ -331,11 +331,15 @@ function u.get_surname (word)
 
   local p = get_extra_word (w, surname_index, extra_surname)
   if p ~= nil then
+    p = utf8.gsub (p, "(%a+)", capitalize)
+    logfile:write ("get_surname v " .. p .. "\n")
     return p
   end
 
   local x = find_baseform (w, surname_index, extra_surname, h, nil, nil)
   if x ~= nil then
+    x = utf8.gsub (x, "(%a+)", capitalize)
+    logfile:write ("get_surname d " .. x .. "\n")
     return x
   end
 
@@ -344,8 +348,8 @@ function u.get_surname (word)
      logfile:write ("get_surname: " .. word .. ": ei perusmuotoa\n")
      return nil
   end
-  logfile:write ("get_surname c " .. s .. "\n")
   local u = utf8.gsub (s, "(%a+)", capitalize)
+  logfile:write ("get_surname e " .. u .. "\n")
   return u
 end
 
