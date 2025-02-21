@@ -363,7 +363,7 @@ function u.get_place_name (word)
     return a["POSSIBLE_GEOGRAPHICAL_NAME"] == "true"
   end
   function h(a)
-    return a["CLASS"] == "nimisana" or  a["CLASS"] == "nimi"
+    return a["CLASS"] == "nimisana" or a["CLASS"] == "nimi" or a["CLASS"] == "etunimi"
   end
   local w = cleanup (word)
   local list = split (w, "%S+")
