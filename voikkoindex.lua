@@ -463,7 +463,7 @@ function u.get_indexed_word (word, extra_word)
   local function classf (a)
     return a["CLASS"] == "nimisana" or a["CLASS"] == "laatusana"  or a["CLASS"] == "nimisana_laatusana" or
            a["CLASS"] == "sukunimi" or a["CLASS"] == "paikannimi" or a["CLASS"] == "lukusana" or
-           a["CLASS"] == "nimi"     or a["CLASS"] == "lyhenne"
+           a["CLASS"] == "etunimi"  or a["CLASS"] == "nimi"       or a["CLASS"] == "lyhenne"
   end
   return get_indexed_word_f (word, extra_word, classf)
 end
