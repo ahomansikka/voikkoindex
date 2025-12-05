@@ -175,7 +175,7 @@ local function cleanup (s)
   t = utf8.gsub (t, "\"", "")               -- Poistetaan tavutusohje esim. linja"-autosta => linja-autosta.
   t = utf8.gsub (t, "\n", " ")              -- Muutetaan rivinvaihto tyhjeeksi.
   t = utf8.gsub (t, "\\emph%s*{", "")       -- Esim. "\emph{Virtanen}" => "Virtanen}" tai "\emph{Virtanen.}" => "Virtanen.}"
-  t = utf8.gsub (t, "[.,;]}", "")           -- Poistetaan \emph{}:n lopusta jäljelle jääneet merkkijonot ".}", ",}" tai ";}".
+  t = utf8.gsub (t, "[.,;:]}", "")          -- Poistetaan \emph{}:n lopusta jäljelle jääneet merkkijonot ".}", ",}" tai ";}".
   t = utf8.gsub (t, "[{}]", "")             -- Poistetaan mahdollisesti jäljelle jääneet { ja }.
   return t
 end
