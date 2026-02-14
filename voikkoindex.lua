@@ -93,15 +93,17 @@ local function beautify (s, t)
     if s == nil or t == nil then
         error ("beautify: s == nil or t == nil")
     end
+    --logfile:write ("beautify a " .. s .. " " .. t .. "\n")
     local n = common_prefix_index (s, t)
     if n == 0 then
         return ""
     end
+    --logfile:write ("beautify b " .. s .. " " .. t .. "\n")
     local x = utf8.sub (s, 1, n)
     local y = utf8.sub (t, n+1)
     local z = x .. y
     assert (z ~= nil)
-    --logfile:write ("beautify " .. s .. " " .. t .. "\n")
+    --logfile:write ("beautify " .. s .. " " .. t .. " " .. z .. "\n")
     return z
 end
 
@@ -112,6 +114,25 @@ end
 local function capitalize (word)
     local b = utf8.title(utf8.sub(word,1,1)) .. utf8.lower(utf8.sub(word,2))
     return b
+end
+
+
+-- Kuten capitalize() mutta huomioidaan yhdysviiva ääntiöiden välissä.
+-- Siis esim. Lähi-itä, mutta Iso-Britannia.
+--
+local function capitalize_place_name (word)
+    local n = utf8.find (word, "-", 1, true)
+    if n == nil then
+        return capitalize (word)
+    else
+        if utf8.sub(word,n-1,n-1) == utf8.sub(word,n+1,n+1) then
+            --logfile:write ("CAP1 " .. word .. " " .. n .. " " .. utf8.sub(word,n-1,n-1) .. " " .. utf8.sub(word,n+1,n+1) .. "\n")
+            return capitalize (word)
+        else 
+            --logfile:write ("CAP2 " .. word .. " " .. n .. " " .. "\n")
+            return utf8.gsub (word, "(%a+)", capitalize)
+        end
+    end
 end
 
 
@@ -177,21 +198,21 @@ end
 -- mutta isot ja pienet kirjaimet ovat samoja.
 --
 local function get_strict_result (word, result)
-    for i = 1, #result do logfile:write ("get_strict_result1 " .. result[i] .. "\n") end
+--    for i = 1, #result do logfile:write ("get_strict_result1 " .. result[i] .. "\n") end
     if #result == 0 then
-        logfile:write ("get_strict_result2 " .. word .. ": ei perusmuotoa A.\n")
+--        logfile:write ("get_strict_result2 " .. word .. ": ei perusmuotoa A.\n")
         return nil
     elseif #result > 1 then
         if all_same (result) then
-          logfile:write ("get_strict_result3 " .. word .. ": perusmuoto: " .. result[1] .. " B.\n")
+--            logfile:write ("get_strict_result3 " .. word .. ": perusmuoto: " .. result[1] .. " B.\n")
             return result[1]
         else
-          logfile:write ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
+--            logfile:write ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
             error ("get_strict_result4 " .. word .. ": useampi kuin yksi perusmuoto C.\n")
             return nil
         end
     else
-        logfile:write ("get_strict_result5 " .. word .. ": perusmuoto: " .. result[1] .. ".\n")
+--        logfile:write ("get_strict_result5 " .. word .. ": perusmuoto: " .. result[1] .. ".\n")
         return result[1]
     end
 end
@@ -467,13 +488,10 @@ local function get_place_name (word)
 
     if #list == 1 then
         local u = find_index_or_original (p, place_name_index)
-        local v = utf8.gsub (u, "[%a]+", capitalize)
-        local first, last = utf8.find (v, "Lähi-Itä", 1, true)
-        if first == 1 and last == utf8.len(v) then
-            return "Lähi-itä"  -- Tämä kirjoitetaan pienellä toka i:llä.
-        else
-            return v
-        end
+        --logfile:write ("a " .. p .. " " .. u .. "\n")
+        local v = capitalize_place_name (u)
+        --logfile:write ("b " .. p .. " " .. v .. "\n")
+        return v
     else
         local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], p)
         return u
@@ -483,7 +501,9 @@ end
 
 function u.print_place_name (word)
     local baseform = get_place_name (word)
+    --logfile:write ("c " .. word .. " " .. baseform .. "\n")
     if baseform ~= nil then
+        --logfile:write ("d " .. word .. " " .. baseform .. "\n")
         tex.sprint (baseform)
     else
         error (word .. ": ei perusmuotoa.")
@@ -495,12 +515,15 @@ end
 
 
 local function get_word (word)
-    logfile:write ("get_word a " .. word .. "\n")
+    --logfile:write ("get_word a " .. word .. "\n")
     function f(a)
         return a["CLASS"] == "nimisana" or a["CLASS"] == "nimisana_laatusana" or a["CLASS"] == "lyhenne"
     end
+    function g(a)
+        return a["CLASS"] == "laatusana"
+    end
     local w = cleanup (word)
-    logfile:write ("get_word b " .. w .. "\n")
+    --logfile:write ("get_word b " .. w .. "\n")
 
     local list = split (w, "%S+")
 
@@ -514,14 +537,18 @@ local function get_word (word)
 
     local p = get_extra_word_or_baseform (list[#list], f, word_index, extra_word)
     if p == nil then
-        error (word .. ": ei perusmuotoa.")
+        p = get_extra_word_or_baseform (list[#list], g, word_index, extra_word)
+        if p == nil then
+            error (word .. ": ei perusmuotoa.")
+        end
     end
 
     if #list == 1 then
-        return find_index_or_original (p, word_index)
+        --logfile:write ("get_word c " .. w .. "\n")
+        return beautify (list[#list], find_index_or_original (p, word_index))
     else
         local u = table.concat(list," ",1,#list-1) .. " " .. beautify (list[#list], p)
-        logfile:write ("get_word e " .. u .. "\n")
+        --logfile:write ("get_word e " .. u .. "\n")
         return u
     end
     return nil
@@ -663,7 +690,7 @@ end
 --
 function u.print_word_capitalize (word)
     local baseform = get_word (word)
-    local b = capitalize (word)
+    local b = capitalize (baseform)
     logfile:write ("print_word_capitalize " .. word .. " " .. baseform .. " " .. b .. "\n")
     tex.sprint (b)
 end
